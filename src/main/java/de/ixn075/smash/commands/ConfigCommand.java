@@ -19,7 +19,7 @@ public class ConfigCommand extends Command {
         super(name, description, usageMessage, List.of("cfg"));
     }
 
-    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String label, String[] args) {
+    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String label, String @NotNull [] args) {
         if (sender.hasPermission("smash.config")) {
             if (args.length == 1) {
                 return Stream.of("discard", "reload", "save").filter(s -> s.startsWith(args[0])).toList();
@@ -35,7 +35,11 @@ public class ConfigCommand extends Command {
             return false;
         }
         if (args.length == 0) {
-
+            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Use following arguments:", GRAY)));
+            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("- discard", GREEN)));
+            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("- reload", GREEN)));
+            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("- save", GREEN)));
+            return false;
         } else if (args.length == 1) {
             PluginConfig config = SmashPlugin.getPlugin().getSmashConfig();
             switch (args[0].toLowerCase()) {

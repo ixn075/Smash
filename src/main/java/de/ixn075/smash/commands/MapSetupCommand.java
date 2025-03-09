@@ -24,7 +24,7 @@ public class MapSetupCommand extends Command {
         super(name, description, usageMessage, List.of());
     }
 
-    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String label, String[] args) {
+    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String label, String @NotNull [] args) {
         if (sender.hasPermission("smash.mapsetup")) {
             if (args.length == 1) {
                 return Stream.of("abort", "finish", "set", "start").filter(s -> s.startsWith(args[0])).toList();
