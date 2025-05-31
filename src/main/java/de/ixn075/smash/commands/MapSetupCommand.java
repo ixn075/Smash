@@ -139,16 +139,16 @@ public class MapSetupCommand extends Command {
                 }
                 if (SmashPlugin.getPlugin().getSetups().get(player) != null) {
                     MapSetup mapSetup = SmashPlugin.getPlugin().getSetups().get(player);
-                    sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Setup '" + mapSetup.getName() + "' already running.", YELLOW)));
+                    player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Setup '" + mapSetup.getName() + "' already running.", YELLOW)));
                     return false;
                 }
                 if (!NumberUtils.isParsable(args[2])) {
-                    sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Index size '" + args[2] + "' is not a valid number.", RED)));
+                    player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Index size '" + args[2] + "' is not a valid number.", RED)));
                     return false;
                 }
                 int indexSize = NumberUtils.toInt(args[2]);
                 MapSetup setup = new MapSetup(player, mapName, indexSize);
-                sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Setup '" + setup.getName() + "' started.", GREEN)));
+                player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Setup '" + setup.getName() + "' started.", GREEN)));
                 return true;
             } else {
                 player.sendMessage(Strings.PREFIX.append(Strings.UNKNOWN_COMMAND.replaceText(builder -> builder.matchLiteral("$command").replacement(args[0]))));
