@@ -7,6 +7,7 @@ import de.ixn075.smash.countdown.LobbyCountdown;
 import de.ixn075.smash.gamestate.GameState;
 import de.ixn075.smash.strings.Strings;
 import de.ixn075.smash.util.PlayerUtil;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -66,6 +67,8 @@ public class PlayerJoinListener implements Listener {
             // minPlayers > 1
             if (online >= minPlayers) {
                 LobbyCountdown.start(); // Start countdown if minimum players are reached
+            } else {
+                PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plain("There are still players missing to start the game.", RED)));
             }
         } else if (SmashPlugin.getPlugin().getGameStateManager().is(GameState.INGAME)) {
             player.setGameMode(GameMode.SPECTATOR);

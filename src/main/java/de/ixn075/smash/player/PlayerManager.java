@@ -22,13 +22,15 @@ public class PlayerManager {
         Character before;
         if (!characters.containsKey(player)) {
             characters.put(player, character);
-            Component finalMessage = MiniMsg.mini("Your character has been set to $name.", NamedTextColor.GREEN).replaceText(builder -> builder.matchLiteral("$name").replacement(character.data().name()));
+            Component finalMessage = MiniMsg.mini("Your character has been set to $name.", NamedTextColor.GREEN).replaceText(
+                    builder -> builder.matchLiteral("$name").replacement(character.data().name()));
             player.sendActionBar(Strings.PREFIX.append(finalMessage));
         } else {
             before = characters.get(player);
             characters.replace(player, before, character);
             if (before == character) return;
-            Component finalMessage = MiniMsg.plain("Your character has been changed to $name.", NamedTextColor.GREEN).replaceText(builder -> builder.matchLiteral("$name").replacement(character.data().name()));
+            Component finalMessage = MiniMsg.plain("Your character has been changed to $name.", NamedTextColor.GREEN).replaceText(
+                    builder -> builder.matchLiteral("$name").replacement(character.data().name()));
             player.sendActionBar(Strings.PREFIX.append(finalMessage));
         }
     }

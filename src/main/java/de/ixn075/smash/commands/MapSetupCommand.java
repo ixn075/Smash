@@ -34,7 +34,7 @@ public class MapSetupCommand extends Command {
     }
 
     @Override
-    public boolean execute(@NotNull CommandSender sender, @NotNull String label, String[] args) {
+    public boolean execute(@NotNull CommandSender sender, @NotNull String label, String @NotNull [] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage(Strings.PREFIX.append(Strings.ONLY_PLAYERS));
             return false;

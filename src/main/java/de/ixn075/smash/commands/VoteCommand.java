@@ -27,7 +27,7 @@ public class VoteCommand extends Command {
     }
 
     @Override
-    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
+    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, String @NotNull [] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage(Strings.PREFIX.append(Strings.ONLY_PLAYERS));
             return false;

@@ -29,7 +29,7 @@ public class ConfigCommand extends Command {
     }
 
     @Override
-    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
+    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, String @NotNull [] args) {
         if (!sender.hasPermission("smash.config")) {
             sender.sendMessage(Strings.PREFIX.append(Strings.PERMISSION_REQUIRED));
             return false;
@@ -56,6 +56,7 @@ public class ConfigCommand extends Command {
                         sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("There are detected changes!", RED)));
                         sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("You can not reload without saving your changes.", RED)));
                         sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Use '/config save' to save the file.", RED)));
+                        sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("You can also discard the changes with '/config discard'.", RED)));
                         return false;
                     }
                     config.load();

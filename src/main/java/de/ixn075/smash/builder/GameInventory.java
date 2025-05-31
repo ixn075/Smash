@@ -23,7 +23,7 @@ public class GameInventory {
         this.editor = new InventoryEditor(this);
     }
 
-    public GameInventory(int factor, Component name) {
+    public GameInventory(Component name, int factor) {
         // Factor 6 is the highest valid number available to create an inventory in Minecraft.
         // This means the inventory will have 9 * 6 (= 54) slots
         // If factor is greater than 6, use 6 as factor.
