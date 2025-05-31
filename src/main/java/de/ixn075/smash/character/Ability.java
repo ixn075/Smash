@@ -3,11 +3,11 @@ package de.ixn075.smash.character;
 public enum Ability {
 
     STAMP_ATTACK("Stamp Attack"),
-    BOW_ATTACK("Bogen-Attacke"),
+    BOW_ATTACK("Bow Attack"),
     LESS_KNOCKBACK("Less Knockback"),
     STRENGTH_KNOCKBACK("Strength Knockback"),
     SPEED("Speed"),
-    JUMPBOOST("Jump Boost");
+    JUMP_BOOST("Jump Boost");
 
     private final String friendlyName;
 
