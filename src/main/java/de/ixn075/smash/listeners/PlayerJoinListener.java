@@ -7,7 +7,6 @@ import de.ixn075.smash.countdown.LobbyCountdown;
 import de.ixn075.smash.gamestate.GameState;
 import de.ixn075.smash.strings.Strings;
 import de.ixn075.smash.util.PlayerUtil;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
