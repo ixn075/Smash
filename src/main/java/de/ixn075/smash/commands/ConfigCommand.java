@@ -59,6 +59,7 @@ public class ConfigCommand extends Command {
                         sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("You can also discard the changes with '/config discard'.", RED)));
                         return false;
                     }
+                    sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Reloading...", YELLOW)));
                     config.load();
                     sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Configuration reloaded.", GREEN)));
                 }
