@@ -9,8 +9,12 @@ public class VoteManager {
 
     private final HashMap<Player, Map> votes = new HashMap<>();
 
-    public void add(Player player, Map map) {
-        votes.put(player, map);
+    public void vote(Player player, Map map) {
+        if (!votes.containsKey(player)) {
+            votes.put(player, map);
+        } else {
+            votes.replace(player, votes.get(player), map);
+        }
     }
 
     public Map get(Player player) {

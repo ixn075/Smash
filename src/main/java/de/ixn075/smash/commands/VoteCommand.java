@@ -1,8 +1,10 @@
 package de.ixn075.smash.commands;
 
+import de.ixn075.smash.SmashPlugin;
 import de.ixn075.smash.config.MiniMsg;
 import de.ixn075.smash.map.loader.MapLoader;
 import de.ixn075.smash.strings.Strings;
+import de.ixn075.smash.voting.VoteManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,6 +16,8 @@ import static net.kyori.adventure.text.format.NamedTextColor.GRAY;
 import static net.kyori.adventure.text.format.NamedTextColor.GREEN;
 
 public class VoteCommand extends Command {
+
+    private VoteManager vm = SmashPlugin.getPlugin().getVoteManager();
 
     public VoteCommand(String name, String description, String usageMessage) {
         super(name, description, usageMessage, List.of("v"));
@@ -34,6 +38,7 @@ public class VoteCommand extends Command {
         }
         if (args.length == 1) {
             String lowerCaseArg = args[0].toLowerCase();
+            vm.vote(player, );
             player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("You voted for '" + lowerCaseArg + "'.", GREEN)));
         } else {
             sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Use following arguments:", GRAY)));

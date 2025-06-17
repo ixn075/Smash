@@ -48,11 +48,10 @@ public class SmashPlugin extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-
         double classVersion = NumberUtils.toDouble(System.getProperty("java.class.version"));
         if (classVersion < 61.0) {
-            getLogger().warning("You are using a unsupported Java Version! (class: " + classVersion + ")");
-            getLogger().warning("Please update to at least Java 17 (class: 61).");
+            getLogger().warning("You are using a unsupported Java Version! (class version: " + classVersion + ")");
+            getLogger().warning("Please update to at least Java 17 (class version: 61).");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -83,7 +82,7 @@ public class SmashPlugin extends JavaPlugin {
             }
         }
 
-        if (getSmashConfig().noMaps()) {
+        if (getSmashConfig().checkMaps()) {
             getLogger().warning("No maps found.");
         }
 
@@ -130,9 +129,13 @@ public class SmashPlugin extends JavaPlugin {
         }
 
         for (World world : getServer().getWorlds()) {
+            getLogger().config("Configuring world '" + world.getName() + "'.");
             world.setDifficulty(Difficulty.PEACEFUL);
             world.setThundering(false);
             world.setStorm(false);
+            world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
+            world.setGameRule(GameRule.REDUCED_DEBUG_INFO, true);
+            world.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
             world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
             world.setGameRule(GameRule.DO_ENTITY_DROPS, false);
             world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
@@ -149,9 +152,6 @@ public class SmashPlugin extends JavaPlugin {
             world.setGameRule(GameRule.COMMAND_BLOCK_OUTPUT, false);
             world.setGameRule(GameRule.SHOW_DEATH_MESSAGES, false);
             world.setGameRule(GameRule.UNIVERSAL_ANGER, false);
-            world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
-            world.setGameRule(GameRule.REDUCED_DEBUG_INFO, true);
-            world.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
             world.setGameRule(GameRule.MAX_ENTITY_CRAMMING, 8);
         }
 
@@ -173,7 +173,7 @@ public class SmashPlugin extends JavaPlugin {
 
     public PluginConfig getSmashConfig() {
         if (pluginConfig == null)
-            plugin.getLogger().info("Config is not initialized.");
+            plugin.getLogger().info("Config not initialized.");
         return pluginConfig;
     }
 

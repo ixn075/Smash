@@ -119,7 +119,7 @@ public class PluginConfig {
         return fileConfiguration.getConfigurationSection(path);
     }
 
-    public boolean noMaps() {
+    public boolean checkMaps() {
         if (isSection("maps"))
             return getSection("maps").getKeys(false).isEmpty();
         if (isList("maps"))
@@ -160,10 +160,6 @@ public class PluginConfig {
 
     public boolean isList(String path) {
         return fileConfiguration.isList(path);
-    }
-
-    public boolean delete() {
-        return configFile.delete();
     }
 
     public boolean exists() {

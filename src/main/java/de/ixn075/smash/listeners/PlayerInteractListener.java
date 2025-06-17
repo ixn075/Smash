@@ -48,7 +48,7 @@ public class PlayerInteractListener implements Listener {
                 e.setCancelled(true);
             }
             case MAP -> {
-                if (SmashPlugin.getPlugin().getSmashConfig().noMaps()) {
+                if (SmashPlugin.getPlugin().getSmashConfig().checkMaps()) {
                     player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("There are not maps configured.", NamedTextColor.RED)));
                     player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Create maps with /setup start.", NamedTextColor.YELLOW)));
                     e.setCancelled(true);
