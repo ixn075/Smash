@@ -20,8 +20,4 @@ public class VoteManager {
     public void edit(Player player, Map newMap) {
         votes.replace(player, newMap);
     }
-
-    public boolean voted(Player player) {
-        return votes.containsKey(player);
-    }
 }
