@@ -7,26 +7,27 @@
 
 # This project is still work in progress! <br>Please don't give it too much attention.</br>
 
-## Developing on Smash
+<hr>
 
-Clone the repository:
+## Development
 
-```shell
-git clone https://github.com/ixn075/Smash.git
-```
+1. Clone the repository:
 
-To update the source code to the latest commit, run the following command inside the cloned `Smash` directory:
+    ```shell
+    git clone https://github.com/ixn075/Smash.git
+    ```
 
-```shell
-git pull
-```
+2. To compile the project, run the following command inside the cloned `Smash` directory:
 
-### Building
+    #### - macOS / Linux
+    ```shell
+    ./gradlew build
+    ```
+    #### - Windows
+    ```shell
+    .\gradlew.bat build
+    ```
 
-To build/compile the project, run the following command inside the cloned `Smash` directory:
+<hr>
 
-```shell
-./gradlew build
-```
-
-The final jar will be placed in `build/libs`.
+Compiled file is in `build/libs`.
