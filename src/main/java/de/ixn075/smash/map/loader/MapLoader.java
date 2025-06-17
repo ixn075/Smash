@@ -23,6 +23,10 @@ public class MapLoader {
         loadedMaps.remove(name);
     }
 
+    public static Map getMapOfName(String name) {
+        return loadedMaps.get(name);
+    }
+
     public static void loadMaps() {
         ConfigurationSection section = config.getSection("maps");
         if (section == null) {
