@@ -3,7 +3,6 @@ package de.ixn075.smash.commands;
 import de.ixn075.smash.SmashPlugin;
 import de.ixn075.smash.config.MiniMsg;
 import de.ixn075.smash.map.loader.MapLoader;
-import de.ixn075.smash.map.setup.MapSetup;
 import de.ixn075.smash.strings.Strings;
 import de.ixn075.smash.voting.VoteManager;
 import org.bukkit.command.Command;
@@ -13,7 +12,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import static net.kyori.adventure.text.format.NamedTextColor.*;
+import static net.kyori.adventure.text.format.NamedTextColor.GRAY;
+import static net.kyori.adventure.text.format.NamedTextColor.GREEN;
 
 public class VoteCommand extends Command {
 
