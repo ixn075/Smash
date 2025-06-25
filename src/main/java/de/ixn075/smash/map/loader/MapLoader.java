@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
-public class MapLoader {
+public abstract class MapLoader {
 
     private static final PluginConfig config = SmashPlugin.getPlugin().getSmashConfig();
     private static final HashMap<String, Map> loadedMaps = new HashMap<>();
