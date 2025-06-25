@@ -20,8 +20,8 @@ import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 public class MapSetupCommand extends Command {
 
-    public MapSetupCommand(String name, String description, String usageMessage) {
-        super(name, description, usageMessage, List.of());
+    public MapSetupCommand(String name, String description, String usage) {
+        super(name, description, usage, List.of());
     }
 
     public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String label, String @NotNull [] args) {

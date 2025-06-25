@@ -15,8 +15,8 @@ import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 public class ConfigCommand extends Command {
 
-    public ConfigCommand(String name, String description, String usageMessage) {
-        super(name, description, usageMessage, List.of("cfg"));
+    public ConfigCommand(String name, String description, String usage) {
+        super(name, description, usage, List.of("cfg"));
     }
 
     public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String label, String @NotNull [] args) {

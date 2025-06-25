@@ -19,8 +19,8 @@ public class VoteCommand extends Command {
 
     private final VoteManager vm = SmashPlugin.getPlugin().getVoteManager();
 
-    public VoteCommand(String name, String description, String usageMessage) {
-        super(name, description, usageMessage, List.of("v"));
+    public VoteCommand(String name, String description, String usage) {
+        super(name, description, usage, List.of("v"));
     }
 
     public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String label, String @NotNull [] args) {
