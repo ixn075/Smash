@@ -15,4 +15,4 @@ jobs:
           distribution: 'adopt'
           check-latest: true
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build --no-daemon
