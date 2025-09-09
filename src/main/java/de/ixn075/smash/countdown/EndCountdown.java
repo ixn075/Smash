@@ -26,6 +26,7 @@ public class EndCountdown {
                 case 1 ->
                         PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plain("The server restarts in " + seconds + " second.", YELLOW)));
                 case 0 -> {
+                    PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plain("Restarting...", YELLOW)));
                     Bukkit.shutdown();
                     return;
                 }

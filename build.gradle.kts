@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
     compileOnly("com.google.code.gson:gson:2.11.0")
     //implementation("de.chojo.sadu:sadu-mariadb:2.3.0")
 }

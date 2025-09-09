@@ -2,6 +2,7 @@ name: smash
 version: 1.0
 description: "The plugin for Super Smash Bros but in Minecraft."
 author: "ixn_075"
-website: "https://github.com/ixn075/Smash"
+website: https://github.com/ixn075/Smash
 main: "de.ixn075.smash.SmashPlugin"
-api-version: 1.21
+api-version: '1.21.8'
+prefix: Smash

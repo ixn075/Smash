@@ -11,6 +11,7 @@ public class Strings {
      * Config strings
      */
     public static Component PREFIX = MiniMsg.mini("strings.prefix");
+    public static Component SCOREBOARD_TITLE = MiniMsg.mini("strings.title");
 
     /**
      * Plain strings

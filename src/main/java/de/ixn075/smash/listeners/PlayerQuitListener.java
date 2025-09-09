@@ -14,7 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.scoreboard.Objective;
 import org.jetbrains.annotations.NotNull;
 
 import static net.kyori.adventure.text.Component.empty;
@@ -34,36 +33,32 @@ public class PlayerQuitListener implements Listener {
         }
 
         // Remove player's setup when available.
-        MapSetup mapSetup = SmashPlugin.getPlugin().getSetups().get(player);
-        if (mapSetup != null)
-            mapSetup.delete();
+        MapSetup c = SmashPlugin.getPlugin().getSetups().get(player);
+        if (c != null)
+            c.delete();
 
         int online = Bukkit.getOnlinePlayers().size() - 1;
         int minPlayers = SmashPlugin.getPlugin().getSmashConfig().getInt("min-players");
         if (SmashPlugin.getPlugin().getGameStateManager().is(GameState.LOBBY)) {
             // lobby state
-            PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.mini("strings.quit-message").replaceText(builder -> builder.matchLiteral("$name").replacement(player.getName()))));
+            PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.mini("strings.quit").replaceText(builder -> builder.matchLiteral("$name").replacement(player.getName()))));
             if (online < minPlayers) {
                 LobbyCountdown.forceStop();
                 Bukkit.broadcast(Strings.PREFIX.append(MiniMsg.plain("The countdown was stopped, not enough players online to proceed.", RED)));
             }
         } else if (SmashPlugin.getPlugin().getGameStateManager().is(GameState.INGAME)) {
             // in-game state
-            stopServer(online);
+            stopServer();
         } else {
             // end state
-            stopServer(online);
-        }
-        Objective objective = player.getScoreboard().getObjective("abc_" + player.getName());
-        if (objective != null) {
-            objective.unregister();
+            stopServer();
         }
         e.quitMessage(empty());
     }
 
-    private void stopServer(int count) {
+    private void stopServer() {
         // Stop server if no players are online
-        if (count == 0) {
+        if (Bukkit.getOnlinePlayers().isEmpty()) {
             Bukkit.shutdown();
         }
     }

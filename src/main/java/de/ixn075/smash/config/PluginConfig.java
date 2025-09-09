@@ -35,7 +35,7 @@ public class PluginConfig {
         this.changed = false;
         try {
             if (configFile.getParentFile().mkdirs()) {
-                this.logger.info(String.format("'%s' created.", configFile.getParentFile().getName()));
+                this.logger.info(String.format("'%s' folder created.", configFile.getParentFile().getName()));
             }
             if (configFile.createNewFile()) {
                 this.logger.info(String.format("'%s' file created.", fileName));
@@ -63,9 +63,10 @@ public class PluginConfig {
 
     public void defaultValues() {
         setRichMessage("strings.prefix", MiniMsg.plain("<gold>Smash</gold> <dark_gray>|</dark_gray> "));
-        setRichMessage("strings.join-message", MiniMsg.plain("<green>$name joined the server.</green>"));
-        setRichMessage("strings.quit-message", MiniMsg.plain("<red>$name left the server.</red>"));
-        setValue("config.min-players", 2);
+        setRichMessage("strings.title", MiniMsg.plain("<gold>Smash</gold>"));
+        setRichMessage("strings.join", MiniMsg.plain("<green>$name joined the server.</green>"));
+        setRichMessage("strings.quit", MiniMsg.plain("<red>$name left the server.</red>"));
+        setValue("config.min-players", 4);
         setValue("maps", Collections.emptyList());
     }
 
@@ -85,23 +86,23 @@ public class PluginConfig {
         return fileConfiguration.getInt(path, def);
     }
 
-    public Location[] getLocs(String path) {
+    public Location[] getLocations(String path) {
         List<?> configList = getList(path);
-        List<Location> locs = new ArrayList<>();
+        List<Location> locationList = new ArrayList<>();
         if (configList != null) {
             for (Object object : configList) {
                 if (object instanceof Location location) {
-                    locs.add(location);
+                    locationList.add(location);
                 }
             }
         }
 
-        if (!locs.isEmpty()) {
+        if (!locationList.isEmpty()) {
 
-            Location[] locations = new Location[locs.size()];
+            Location[] locations = new Location[locationList.size()];
 
             int i = 0;
-            for (Location location : locs) {
+            for (Location location : locationList) {
                 locations[i] = location;
                 i++;
             }

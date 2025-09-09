@@ -40,7 +40,7 @@ public abstract class MapLoader {
 
     @Contract("_ -> new")
     private static @NotNull Map loadMap(String mapName) {
-        Location[] locations = config.getLocs("maps." + mapName + ".spawnLocations");
+        Location[] locations = config.getLocations("maps." + mapName + ".spawnLocations");
         if (locations.length == 0) {
             throw new IllegalArgumentException("Locations for map '" + mapName + "' are empty.");
         }
@@ -51,6 +51,12 @@ public abstract class MapLoader {
         loadedMaps.forEach((name, map) -> removeMap(name));
     }
 
+    /**
+     *
+     * Gets the current loaded maps in the HashMap
+     *
+     * @return the loaded maps from the HashMap
+     */
     public static HashMap<String, Map> getLoadedMaps() {
         return loadedMaps;
     }

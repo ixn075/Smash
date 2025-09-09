@@ -38,7 +38,8 @@ public class GameStateChangeListener implements Listener {
                     ItemStack bedrockItem = new Item(Material.BEDROCK, 3, MiniMsg.plain("BEDROCK", RED)).build();
                     assert chestItem != null;
                     assert bedrockItem != null;
-                    //new ItemSpreading(player.getLocation(), 5, List.of(chestItem, bedrockItem));
+                    // new ItemSpreading(player.getLocation(), 5, List.of(chestItem, bedrockItem));
+
                     // TODO: Teleport players to random locations of voted map
                 }
                 SmashPlugin.getPlugin().getGameTimer().start();
@@ -51,7 +52,7 @@ public class GameStateChangeListener implements Listener {
                     player.setFlying(false);
                     player.getInventory().clear();
                     player.sendTitlePart(TitlePart.TITLE, MiniMsg.plain("End of the game!", RED));
-                    player.sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ZERO, Duration.ofMillis(1500), Duration.ZERO));
+                    player.sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ZERO, Duration.ofMillis(2000), Duration.ZERO));
                 }
                 EndCountdown.start();
             }

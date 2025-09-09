@@ -10,6 +10,7 @@ import de.ixn075.smash.listeners.custom.GameStateChangeListener;
 import de.ixn075.smash.map.loader.MapLoader;
 import de.ixn075.smash.map.setup.MapSetup;
 import de.ixn075.smash.player.PlayerManager;
+import de.ixn075.smash.scoreboard.ScoreboardManager;
 import de.ixn075.smash.timer.GameTimer;
 import de.ixn075.smash.voting.VoteManager;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -30,6 +31,7 @@ public class SmashPlugin extends JavaPlugin {
     private static SmashPlugin plugin;
     private GameStateManager gameStateManager;
     private PlayerManager playerManager;
+    private ScoreboardManager scoreboardManager;
     private HashMap<Player, MapSetup> setups;
     private PluginConfig pluginConfig;
     private VoteManager voteManager;
@@ -57,6 +59,7 @@ public class SmashPlugin extends JavaPlugin {
         }
         gameStateManager = new GameStateManager();
         playerManager = new PlayerManager();
+        scoreboardManager = new ScoreboardManager();
         setups = new HashMap<>();
     }
 
@@ -165,6 +168,10 @@ public class SmashPlugin extends JavaPlugin {
 
     public PlayerManager getPlayerManager() {
         return playerManager;
+    }
+
+    public ScoreboardManager getScoreboardManager() {
+        return scoreboardManager;
     }
 
     public HashMap<Player, MapSetup> getSetups() {

@@ -26,8 +26,8 @@ public class InventoryClickListener implements Listener {
             e.setCancelled(true);
             return;
         }
-        Component itemName = e.getCurrentItem().getItemMeta().displayName();
-        if (itemName == null) {
+        Component item = e.getCurrentItem().getItemMeta().displayName();
+        if (item == null) {
             e.setCancelled(true);
             return;
         }
@@ -35,13 +35,13 @@ public class InventoryClickListener implements Listener {
             return;
         }
         PlayerManager pm = SmashPlugin.getPlugin().getPlayerManager();
-        if (itemName.equals(Character.MARIO.data().name())) {
+        if (item.equals(Character.MARIO.data().name())) {
             pm.set(player, Character.MARIO);
             player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("<green>Selected Mario!</green>")));
-        } else if (itemName.equals(Character.DONKEY_KONG.data().name())) {
+        } else if (item.equals(Character.DONKEY_KONG.data().name())) {
             pm.set(player, Character.DONKEY_KONG);
             player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("<green>Selected Donkey Kong!</green>")));
-        } else if (itemName.equals(Character.FLASH.data().name())) {
+        } else if (item.equals(Character.FLASH.data().name())) {
             pm.set(player, Character.FLASH);
             player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("<green>Selected Flash!</green>")));
         }
