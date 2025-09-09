@@ -17,7 +17,7 @@
     git clone https://github.com/ixn075/Smash.git
     ```
 
-2. To compile the project, run the following command inside the cloned `Smash` directory:
+2. Compile the project:
 
     #### - macOS / Linux
     ```shell
