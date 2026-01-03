@@ -5,7 +5,9 @@
 ![Repo Size](https://img.shields.io/github/repo-size/ixn075/Smash?style=for-the-badge)
 ![Repo Stars](https://img.shields.io/github/stars/ixn075/Smash?style=for-the-badge)
 
-# This project is still work in progress! <br>Please don't give it too much attention.</br>
+# PROJECT IS PAUSED!
+
+## This project is still work in progress! <br>Please don't give it too much attention.</br>
 
 <hr>
 
