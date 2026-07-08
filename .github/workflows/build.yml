@@ -14,5 +14,6 @@ jobs:
           java-version: 21 # ${{ matrix.java }}
           distribution: 'adopt'
           check-latest: true
+          verify-signature: true
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build --no-daemon
