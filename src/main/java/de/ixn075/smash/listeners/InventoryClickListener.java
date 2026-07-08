@@ -27,7 +27,7 @@ public class InventoryClickListener implements Listener {
         Player p = (Player) e.getWhoClicked();
         InventoryView v = e.getView();
 
-        ItemStack item;
+        ItemStack item = e.getCurrentItem();
         if (item == null) {
             e.setCancelled(true);
             return;
@@ -63,9 +63,11 @@ public class InventoryClickListener implements Listener {
             }
         } else if (v.title().contains(Strings.MAPS_SELECTION)) {
             // Implement logic
-
+            e.setCancelled(true);
+            return;
         } else {
             e.setCancelled(true);
+            return;
         }
         e.setCancelled(true);
     }
