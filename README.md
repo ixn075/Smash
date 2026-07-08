@@ -21,11 +21,11 @@
 
 2. Compile the project:
 
-    #### - macOS / Linux
+   #### - macOS / Linux
     ```shell
     ./gradlew build
     ```
-    #### - Windows
+   #### - Windows
     ```shell
     .\gradlew.bat build
     ```

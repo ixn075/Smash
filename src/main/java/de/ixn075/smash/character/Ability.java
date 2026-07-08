@@ -4,20 +4,18 @@ public enum Ability {
 
     STAMP_ATTACK("Stamp Attack"),
     BOW_ATTACK("Bow Attack"),
-    LESS_KNOCKBACK("Less Knockback"),
-    STRENGTH_KNOCKBACK("Strength Knockback"),
-    SPEED("Speed"),
-    SPEED_2("Speed II"),
-    SPEED_3("Speed III"),
+    NO_KNOCKBACK("No knockback"),
+    SPEED_EFFECT("Speed"),
+    SPEED_BOOST("Speed II"),
     JUMP_BOOST("Jump Boost");
 
-    private final String friendlyName;
+    private final String name;
 
-    Ability(String friendlyName) {
-        this.friendlyName = friendlyName;
+    Ability(String name) {
+        this.name = name;
     }
 
-    public String getFriendlyName() {
-        return friendlyName;
+    public String getName() {
+        return name;
     }
 }

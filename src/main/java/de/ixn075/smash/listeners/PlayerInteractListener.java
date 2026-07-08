@@ -5,6 +5,7 @@ import de.ixn075.smash.builder.GameInventory;
 import de.ixn075.smash.builder.Item;
 import de.ixn075.smash.builder.Skull;
 import de.ixn075.smash.character.Character;
+import de.ixn075.smash.character.CharacterManager;
 import de.ixn075.smash.config.MiniMsg;
 import de.ixn075.smash.map.loader.MapLoader;
 import de.ixn075.smash.strings.Strings;
@@ -26,6 +27,8 @@ import static net.kyori.adventure.text.format.NamedTextColor.GREEN;
 
 public class PlayerInteractListener implements Listener {
 
+    private CharacterManager cm;
+
     @EventHandler
     void on(@NotNull PlayerInteractEvent e) {
         if (!e.getAction().equals(Action.RIGHT_CLICK_AIR)) {
@@ -33,14 +36,15 @@ public class PlayerInteractListener implements Listener {
             return;
         }
         Player player = e.getPlayer();
+        cm = SmashPlugin.getPlugin().getCharacterManager();
 
         switch (e.getMaterial()) {
             case CHEST -> {
                 List<ItemStack> items = new ArrayList<>(Collections.emptyList());
-                for (Character character : Character.values()) {
-                    items.add(new Skull(1, character.data().name()).build());
+                for (Character character : cm.getCharacters()) {
+                    items.add(new Skull(1, character.getName()).build());
                 }
-                new GameInventory(Strings.CHARACTERS_SELECTION_NAME).edit(editor -> {
+                new GameInventory(Strings.CHARACTER_SELECTION).edit(editor -> {
                     for (int i = 0; i < items.size(); i++) {
                         editor.set(i, items.get(i));
                     }
@@ -48,13 +52,14 @@ public class PlayerInteractListener implements Listener {
                 e.setCancelled(true);
             }
             case MAP -> {
-                if (SmashPlugin.getPlugin().getSmashConfig().checkMaps()) {
+                if (SmashPlugin.getPlugin().getSmashConfig().mapsEmpty()) {
                     player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("There are not maps configured.", NamedTextColor.RED)));
                     player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Create maps with /setup start.", NamedTextColor.YELLOW)));
                     e.setCancelled(true);
                     return;
                 }
-                new GameInventory(MiniMsg.plain("Maps", NamedTextColor.GOLD)).edit(editor -> {
+                new GameInventory(Strings.MAPS_SELECTION).edit(editor -> {
+                    MapLoader.loadMaps();
                     for (String mapName : MapLoader.getLoadedMaps().keySet()) {
                         editor.add(new Item(Material.PAPER, 1, MiniMsg.plain(mapName, GREEN)).build());
                         e.setCancelled(true);

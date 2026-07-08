@@ -6,18 +6,15 @@ plugins {
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public")
-    //maven("https://eldonexus.de/repository/maven-public") // sadu
-    //maven("https://libraries.minecraft.net")
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
-    compileOnly("com.google.code.gson:gson:2.11.0")
-    //implementation("de.chojo.sadu:sadu-mariadb:2.3.0")
+    compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+    compileOnly("com.google.code.gson:gson:2.14.0")
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(JavaVersion.VERSION_21.majorVersion))
 }
 
 group = "de.ixn075"

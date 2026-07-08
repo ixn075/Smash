@@ -8,13 +8,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class PluginConfig {
@@ -46,31 +46,31 @@ public class PluginConfig {
     }
 
     public <V> void setValue(@NotNull String path, V value) {
-        if (fileConfiguration.contains(path)) {
-            return;
-        }
         fileConfiguration.set(path, value);
         if (!changed) changed = true;
     }
 
     public void setRichMessage(@NotNull String path, Component value) {
-        if (fileConfiguration.contains(path)) {
-            return;
-        }
         fileConfiguration.setRichMessage(path, value);
         if (!changed) changed = true;
     }
 
     public void defaultValues() {
-        setRichMessage("strings.prefix", MiniMsg.plain("<gold>Smash</gold> <dark_gray>|</dark_gray> "));
-        setRichMessage("strings.title", MiniMsg.plain("<gold>Smash</gold>"));
-        setRichMessage("strings.join", MiniMsg.plain("<green>$name joined the server.</green>"));
-        setRichMessage("strings.quit", MiniMsg.plain("<red>$name left the server.</red>"));
-        setValue("config.min-players", 4);
-        setValue("maps", Collections.emptyList());
+        setValue("config.min-players", 2);
+        setRichMessage("config.names.character_selection", MiniMsg.plain("<gold>Characters</gold>"));
+        setRichMessage("config.names.maps_selection", MiniMsg.plain("<gold>Maps</gold>"));
+        setRichMessage("config.strings.prefix", MiniMsg.plain("<gold>Smash</gold><dark_gray> => </dark_gray>"));
+        setRichMessage("config.strings.join", MiniMsg.plain("<green>$name joined the server.</green>"));
+        setRichMessage("config.strings.quit", MiniMsg.plain("<red>$name left the server.</red>"));
+        setRichMessage("config.strings.scoreboard.title", MiniMsg.plain("<gold>Smash</gold> <dark_gray>|</dark_gray> $timer"));
+        setValue("config.maps", Collections.emptyList());
     }
 
-    public String getStr(String path) {
+    public Component getRichMsg(@NotNull String path) {
+        return fileConfiguration.getRichMessage(path);
+    }
+
+    public @Nullable String getStr(String path) {
         return getStr(path, null);
     }
 
@@ -120,31 +120,20 @@ public class PluginConfig {
         return fileConfiguration.getConfigurationSection(path);
     }
 
-    public boolean checkMaps() {
+    public boolean mapsEmpty() {
         if (isSection("maps"))
             return getSection("maps").getKeys(false).isEmpty();
         if (isList("maps"))
             return getList("maps").isEmpty();
-        return true;
+        return false;
     }
 
     public boolean isChanged() {
         return changed;
     }
 
-    public void save(@NotNull Consumer<Throwable> consumer) {
-        try {
-            if (!changed) {
-                this.logger.info("No changes detected, cancelling.");
-            } else {
-                // Case: There are unsaved changes left.
-                fileConfiguration.save(configFile);
-            }
-        } catch (IOException exception) {
-            consumer.accept(exception);
-        } finally {
-            if (changed) changed = false;
-        }
+    public void trySave() throws IOException {
+        this.fileConfiguration.save(configFile);
     }
 
     public void discardChanges() {
@@ -171,7 +160,7 @@ public class PluginConfig {
         return fileConfiguration.getKeys(true).isEmpty();
     }
 
-    public void load() {
+    public void reload() {
         fileConfiguration = YamlConfiguration.loadConfiguration(configFile);
     }
 }

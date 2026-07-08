@@ -11,12 +11,14 @@ public class MapSetup {
     private final String name;
     private final Location[] spawnLocations;
     private final int indexSize;
+    private short currentIndexSize;
 
     public MapSetup(Player player, String name, int indexSize) {
         this.player = player;
         this.name = name;
         this.spawnLocations = new Location[indexSize];
         this.indexSize = indexSize;
+        this.currentIndexSize = 0;
         SmashPlugin.getPlugin().getSetups().put(player, this);
     }
 
@@ -47,15 +49,16 @@ public class MapSetup {
 
     public void setSpawnLocation(int index, Location location) {
         this.spawnLocations[index] = location;
+
     }
 
     public int countLocations() {
-        int count = 0;
+        currentIndexSize = 0;
         for (Location location : this.spawnLocations) {
             if (location != null) {
-                count++;
+                currentIndexSize++;
             }
         }
-        return count;
+        return currentIndexSize;
     }
 }

@@ -36,6 +36,12 @@ public class LobbyCountdown {
                         PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plain("The game starts in " + seconds + " second.", YELLOW)));
                 case 0 -> {
                     forceStop();
+
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        player.setLevel(0);
+                        player.setExp(0);
+                    }
+
                     SmashPlugin.getPlugin().getGameStateManager().setCurrentState(GameState.INGAME);
                     PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plain("Let the game begin!", GREEN)));
                     // TODO: Teleport all players to the different spawn locations
@@ -60,10 +66,6 @@ public class LobbyCountdown {
                 bukkitScheduler.cancelTask(taskId);
             }
             taskId = -1; // (reset)
-        }
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            player.setLevel(0);
-            player.setExp(0);
         }
     }
 }

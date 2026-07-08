@@ -32,6 +32,9 @@ public abstract class MapLoader {
         if (section == null) {
             return;
         }
+        if (!loadedMaps.isEmpty()) {
+            loadedMaps.clear();
+        }
         for (String mapName : section.getKeys(false)) {
             Map map = loadMap(mapName);
             loadedMaps.put(mapName, map);
@@ -45,10 +48,6 @@ public abstract class MapLoader {
             throw new IllegalArgumentException("Locations for map '" + mapName + "' are empty.");
         }
         return new Map(mapName, locations);
-    }
-
-    public static void clearMaps() {
-        loadedMaps.forEach((name, map) -> removeMap(name));
     }
 
     /**

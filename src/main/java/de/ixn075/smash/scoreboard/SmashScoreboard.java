@@ -1,8 +1,7 @@
 package de.ixn075.smash.scoreboard;
 
 import de.ixn075.smash.SmashPlugin;
-import de.ixn075.smash.config.MiniMsg;
-import net.kyori.adventure.text.format.NamedTextColor;
+import de.ixn075.smash.strings.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Criteria;
@@ -14,22 +13,29 @@ import org.jetbrains.annotations.NotNull;
 public class SmashScoreboard {
 
     private final Scoreboard scoreboard;
-    private final de.ixn075.smash.scoreboard.ScoreboardManager sm = SmashPlugin.getPlugin().getScoreboardManager();
+    private final ScoreboardPlayerManager sm = SmashPlugin.getPlugin().getScoreboardManager();
+    private final Player player;
 
-    public SmashScoreboard() {
-        ScoreboardManager sm = Bukkit.getScoreboardManager();
-        this.scoreboard = sm.getNewScoreboard();
-    }
-
-    public void init() {
+    public SmashScoreboard(Player player) {
+        this.player = player;
+        ScoreboardManager bsm = Bukkit.getScoreboardManager();
+        this.scoreboard = bsm.getNewScoreboard();
         if (scoreboard.getObjective("SmashBoard") == null) {
             this.scoreboard.registerNewObjective("SmashBoard", Criteria.DUMMY,
-                    MiniMsg.plain("<gold>Smash</gold>", NamedTextColor.YELLOW), RenderType.INTEGER);
-
+                    Strings.SCOREBOARD_TITLE, RenderType.INTEGER);
+            sm.add(player);
         }
     }
 
-    public void show(@NotNull Player player) {
-        player.setScoreboard(this.scoreboard);
+    public void show() throws IllegalArgumentException, IllegalStateException {
+        if (!sm.getPlayers().contains(player)) {
+            player.setScoreboard(this.scoreboard);
+        }
+    }
+
+    public void clear(@NotNull Player player) throws IllegalArgumentException, IllegalStateException {
+        if (sm.getPlayers().contains(player)) {
+            player.setScoreboard(this.scoreboard);
+        }
     }
 }

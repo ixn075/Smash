@@ -16,14 +16,14 @@ public class GameInventory {
     private final InventoryEditor editor;
     private final int slots;
 
-    public GameInventory(Component name) {
+    public GameInventory(Component name) throws IllegalArgumentException {
         this.slots = 9; // Default value
         this.name = name;
         this.inventory = Bukkit.createInventory(null, slots, name);
         this.editor = new InventoryEditor(this);
     }
 
-    public GameInventory(Component name, int factor) {
+    public GameInventory(Component name, int factor) throws IllegalArgumentException {
         // Factor 6 is the highest valid number available to create an inventory in Minecraft.
         // This means the inventory will have 9 * 6 (= 54) slots
         // If factor is greater than 6, use 6 as factor.

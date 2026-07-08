@@ -1,7 +1,9 @@
 package de.ixn075.smash;
 
+import de.ixn075.smash.character.CharacterManager;
 import de.ixn075.smash.commands.ConfigCommand;
 import de.ixn075.smash.commands.MapSetupCommand;
+import de.ixn075.smash.commands.StartCommand;
 import de.ixn075.smash.commands.VoteCommand;
 import de.ixn075.smash.config.PluginConfig;
 import de.ixn075.smash.gamestate.GameStateManager;
@@ -10,18 +12,19 @@ import de.ixn075.smash.listeners.custom.GameStateChangeListener;
 import de.ixn075.smash.map.loader.MapLoader;
 import de.ixn075.smash.map.setup.MapSetup;
 import de.ixn075.smash.player.PlayerManager;
-import de.ixn075.smash.scoreboard.ScoreboardManager;
+import de.ixn075.smash.scoreboard.ScoreboardPlayerManager;
 import de.ixn075.smash.timer.GameTimer;
 import de.ixn075.smash.voting.VoteManager;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.Difficulty;
-import org.bukkit.GameRule;
+import org.bukkit.GameRules;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,9 +34,10 @@ public class SmashPlugin extends JavaPlugin {
     private static SmashPlugin plugin;
     private GameStateManager gameStateManager;
     private PlayerManager playerManager;
-    private ScoreboardManager scoreboardManager;
+    private ScoreboardPlayerManager scoreboardPlayerManager;
     private HashMap<Player, MapSetup> setups;
     private PluginConfig pluginConfig;
+    private CharacterManager characterManager;
     private VoteManager voteManager;
     private GameTimer gameTimer;
 
@@ -46,21 +50,18 @@ public class SmashPlugin extends JavaPlugin {
         if (plugin == null) {
             plugin = this;
         } else {
-            getLogger().severe("Could not assign new/another plugin instance, disable plugin.");
+            getLogger().severe("Could not assign plugin instance, disable plugin.");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+        getLogger().info("Checking class version ...");
         double classVersion = NumberUtils.toDouble(System.getProperty("java.class.version"));
-        if (classVersion < 61.0) {
+        if (classVersion < 65.0) {
             getLogger().warning("You are using a unsupported Java Version! (class version: " + classVersion + ")");
-            getLogger().warning("Please update to at least Java 17 (class version: 61).");
+            getLogger().warning("Please update to at least Java 21! (class version: 65.0)");
             getServer().getPluginManager().disablePlugin(this);
-            return;
         }
-        gameStateManager = new GameStateManager();
-        playerManager = new PlayerManager();
-        scoreboardManager = new ScoreboardManager();
-        setups = new HashMap<>();
+        getLogger().info("Check passed!");
     }
 
     @Override
@@ -71,21 +72,28 @@ public class SmashPlugin extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         } else {
-            pluginConfig.load();
-            MapLoader.clearMaps();
+            pluginConfig.reload();
             MapLoader.loadMaps();
             if (pluginConfig.empty()) {
                 getLogger().warning("Configuration file is empty, resetting to default values.");
                 pluginConfig.defaultValues();
-                pluginConfig.save(exception -> {
-                    if (exception != null) {
-                        getLogger().severe("Error while saving default values to config." + exception);
-                    }
-                });
+                try {
+                    pluginConfig.trySave();
+                } catch (IOException e) {
+                    getLogger().severe("Error while saving default values to config." + e);
+                }
             }
         }
 
-        if (getSmashConfig().checkMaps()) {
+        setups = new HashMap<>();
+        gameStateManager = new GameStateManager();
+        playerManager = new PlayerManager();
+        scoreboardPlayerManager = new ScoreboardPlayerManager();
+        voteManager = new VoteManager();
+        characterManager = new CharacterManager();
+        gameTimer = new GameTimer();
+
+        if (getSmashConfig().mapsEmpty()) {
             getLogger().warning("No maps found.");
         }
 
@@ -121,11 +129,11 @@ public class SmashPlugin extends JavaPlugin {
 
         List<Command> commands = new ArrayList<>();
         commands.add(new ConfigCommand("config",
-                "Config command to manage config.", "/config <discard, reload, save>"));
+                "Config command to manage config.", "/config <reload>"));
         commands.add(new MapSetupCommand("mapsetup",
                 "Setup command to configure maps.", "/mapsetup <abort, finish, set, start>"));
-        commands.add(new VoteCommand("vote",
-                "Vote command to change map vote.", "/vote <map>"));
+        commands.add(new StartCommand("start", "Start command to skip wait time.", "/start"));
+        commands.add(new VoteCommand("vote", "Vote command to change map vote.", "/vote <map>"));
 
         for (Command command : commands) {
             getServer().getCommandMap().register("smash", command);
@@ -136,30 +144,27 @@ public class SmashPlugin extends JavaPlugin {
             world.setDifficulty(Difficulty.PEACEFUL);
             world.setThundering(false);
             world.setStorm(false);
-            world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
-            world.setGameRule(GameRule.REDUCED_DEBUG_INFO, true);
-            world.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
-            world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
-            world.setGameRule(GameRule.DO_ENTITY_DROPS, false);
-            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-            world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-            world.setGameRule(GameRule.DO_PATROL_SPAWNING, false);
-            world.setGameRule(GameRule.DO_TRADER_SPAWNING, false);
-            world.setGameRule(GameRule.DO_WARDEN_SPAWNING, false);
-            world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
-            world.setGameRule(GameRule.DO_MOB_LOOT, false);
-            world.setGameRule(GameRule.MOB_GRIEFING, false);
-            world.setGameRule(GameRule.NATURAL_REGENERATION, false);
-            world.setGameRule(GameRule.LOG_ADMIN_COMMANDS, false);
-            world.setGameRule(GameRule.KEEP_INVENTORY, false);
-            world.setGameRule(GameRule.COMMAND_BLOCK_OUTPUT, false);
-            world.setGameRule(GameRule.SHOW_DEATH_MESSAGES, false);
-            world.setGameRule(GameRule.UNIVERSAL_ANGER, false);
-            world.setGameRule(GameRule.MAX_ENTITY_CRAMMING, 8);
+            world.setGameRule(GameRules.IMMEDIATE_RESPAWN, true);
+            world.setGameRule(GameRules.REDUCED_DEBUG_INFO, true);
+            world.setGameRule(GameRules.SEND_COMMAND_FEEDBACK, true);
+            world.setGameRule(GameRules.SHOW_ADVANCEMENT_MESSAGES, false);
+            world.setGameRule(GameRules.ENTITY_DROPS, false);
+            world.setGameRule(GameRules.ADVANCE_TIME, false);
+            world.setGameRule(GameRules.ADVANCE_WEATHER, false);
+            world.setGameRule(GameRules.SPAWN_PATROLS, false);
+            world.setGameRule(GameRules.SPAWN_WANDERING_TRADERS, false);
+            world.setGameRule(GameRules.SPAWN_WARDENS, false);
+            world.setGameRule(GameRules.SPAWN_MOBS, false);
+            world.setGameRule(GameRules.MOB_DROPS, false);
+            world.setGameRule(GameRules.MOB_GRIEFING, false);
+            world.setGameRule(GameRules.NATURAL_HEALTH_REGENERATION, false);
+            world.setGameRule(GameRules.LOG_ADMIN_COMMANDS, false);
+            world.setGameRule(GameRules.KEEP_INVENTORY, false);
+            world.setGameRule(GameRules.COMMAND_BLOCK_OUTPUT, false);
+            world.setGameRule(GameRules.SHOW_DEATH_MESSAGES, false);
+            world.setGameRule(GameRules.UNIVERSAL_ANGER, false);
+            world.setGameRule(GameRules.MAX_ENTITY_CRAMMING, 8);
         }
-
-        voteManager = new VoteManager();
-        gameTimer = new GameTimer();
     }
 
     public GameStateManager getGameStateManager() {
@@ -170,8 +175,8 @@ public class SmashPlugin extends JavaPlugin {
         return playerManager;
     }
 
-    public ScoreboardManager getScoreboardManager() {
-        return scoreboardManager;
+    public ScoreboardPlayerManager getScoreboardManager() {
+        return scoreboardPlayerManager;
     }
 
     public HashMap<Player, MapSetup> getSetups() {
@@ -186,6 +191,10 @@ public class SmashPlugin extends JavaPlugin {
 
     public VoteManager getVoteManager() {
         return voteManager;
+    }
+
+    public CharacterManager getCharacterManager() {
+        return characterManager;
     }
 
     public GameTimer getGameTimer() {

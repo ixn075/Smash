@@ -16,13 +16,13 @@ import static net.kyori.adventure.text.format.NamedTextColor.*;
 public class ConfigCommand extends Command {
 
     public ConfigCommand(String name, String description, String usage) {
-        super(name, description, usage, List.of("cfg"));
+        super(name, description, usage, List.of());
     }
 
     public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String label, String @NotNull [] args) {
         if (sender.hasPermission("smash.config")) {
             if (args.length == 1) {
-                return Stream.of("discard", "reload", "save").filter(s -> s.startsWith(args[0])).toList();
+                return Stream.of("reload").filter(s -> s.startsWith(args[0])).toList();
             }
         }
         return List.of();
@@ -34,57 +34,20 @@ public class ConfigCommand extends Command {
             sender.sendMessage(Strings.PREFIX.append(Strings.PERMISSION_REQUIRED));
             return false;
         }
-        if (args.length == 0) {
+        if (args.length != 1) {
             sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Use following arguments:", GRAY)));
-            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("- discard", GREEN)));
-            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("- reload", GREEN)));
-            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("- save", GREEN)));
+            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("reload", GREEN)));
             return false;
-        } else if (args.length == 1) {
-            PluginConfig config = SmashPlugin.getPlugin().getSmashConfig();
-            switch (args[0].toLowerCase()) {
-                case "discard" -> {
-                    if (!config.isChanged()) {
-                        sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("No changes detected.", RED)));
-                        return false;
-                    }
-                    config.discardChanges();
-                    sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Changes discarded.", GREEN)));
-                }
-                case "reload" -> {
-                    if (config.isChanged()) {
-                        sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("There are detected changes!", RED)));
-                        sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("You can not reload without saving your changes.", RED)));
-                        sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Use '/config save' to save the file.", RED)));
-                        sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("You can also discard the changes with '/config discard'.", RED)));
-                        return false;
-                    }
-                    sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Reloading...", YELLOW)));
-                    config.load();
-                    sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Configuration reloaded.", GREEN)));
-                }
-                case "save" -> {
-                    if (!config.isChanged()) {
-                        sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("No changes detected.", RED)));
-                        return false;
-                    }
-                    config.save(exception -> {
-                        if (exception == null) {
-                            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Configuration saved.", GREEN)));
-                        }
-                    });
-                }
-                default -> {
-                    sender.sendMessage(Strings.PREFIX.append(Strings.UNKNOWN_COMMAND.replaceText(builder -> builder.matchLiteral("$command").replacement(args[0]))));
-                    return false;
-                }
-            }
         } else {
-            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Use following arguments:", GRAY)));
-            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("- discard", GREEN)));
-            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("- reload", GREEN)));
-            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("- save", GREEN)));
-            return false;
+            PluginConfig config = SmashPlugin.getPlugin().getSmashConfig();
+            if (args[0].equalsIgnoreCase("reload")) {
+                sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Reloading...", YELLOW)));
+                config.reload();
+                sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Configuration reloaded.", GREEN)));
+            } else {
+                sender.sendMessage(Strings.PREFIX.append(Strings.UNKNOWN_COMMAND.replaceText(builder -> builder.matchLiteral("$command").replacement(args[0]))));
+                return false;
+            }
         }
         return false;
     }
