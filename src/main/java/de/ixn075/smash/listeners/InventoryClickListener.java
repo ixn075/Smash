@@ -7,11 +7,9 @@ import de.ixn075.smash.player.PlayerManager;
 import de.ixn075.smash.strings.Strings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -26,6 +24,11 @@ public class InventoryClickListener implements Listener {
     void on(@NotNull InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
         InventoryView v = e.getView();
+
+        if (!e.isLeftClick()) {
+            e.setCancelled(true);
+            return;
+        }
 
         ItemStack item = e.getCurrentItem();
         if (item == null) {
