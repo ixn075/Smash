@@ -15,7 +15,7 @@ public class EndCountdown {
     private static int seconds;
 
     public static void start() {
-        if (!SmashPlugin.getPlugin().getGameStateManager().is(GameState.END)) {
+        if (!SmashPlugin.getPlugin().getGameStateManager().isGameState(GameState.END)) {
             throw new IllegalStateException("Ending-Countdown can only be started in END-State.");
         }
         seconds = 15;

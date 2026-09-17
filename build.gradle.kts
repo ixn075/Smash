@@ -18,7 +18,7 @@ java {
 }
 
 group = "de.ixn075"
-version = "1.0"
+version = "1.1"
 description = "The plugin for Super Smash Bros but in Minecraft."
 
 publishing {

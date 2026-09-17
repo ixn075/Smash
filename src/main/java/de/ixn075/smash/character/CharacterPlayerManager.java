@@ -1,6 +1,5 @@
-package de.ixn075.smash.player;
+package de.ixn075.smash.character;
 
-import de.ixn075.smash.character.Character;
 import de.ixn075.smash.events.CharacterChangeEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -8,11 +7,11 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PlayerManager {
+public class CharacterPlayerManager {
 
     private final Map<Player, Character> characters;
 
-    public PlayerManager() {
+    public CharacterPlayerManager() {
         this.characters = new HashMap<>();
     }
 
@@ -20,8 +19,8 @@ public class PlayerManager {
         return characters.get(player);
     }
 
-    public void set(Player player, Character character) {
-        Bukkit.getPluginManager().callEvent(new CharacterChangeEvent(characters.get(player), character));
+    public void setCharacter(Player player, Character character) {
+        Bukkit.getPluginManager().callEvent(new CharacterChangeEvent(player, characters.get(player), character));
         characters.replace(player, character);
     }
 

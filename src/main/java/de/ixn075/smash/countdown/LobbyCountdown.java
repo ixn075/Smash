@@ -18,7 +18,7 @@ public class LobbyCountdown {
     private static int seconds;
 
     public static void start() {
-        if (!SmashPlugin.getPlugin().getGameStateManager().is(GameState.LOBBY)) {
+        if (!SmashPlugin.getPlugin().getGameStateManager().isGameState(GameState.LOBBY)) {
             throw new IllegalStateException("Lobby-Countdown can only be started in LOBBY-State.");
         }
         seconds = 15;
@@ -42,7 +42,7 @@ public class LobbyCountdown {
                         player.setExp(0);
                     }
 
-                    SmashPlugin.getPlugin().getGameStateManager().setCurrentState(GameState.INGAME);
+                    SmashPlugin.getPlugin().getGameStateManager().set(GameState.INGAME, false);
                     PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plain("Let the game begin!", GREEN)));
                     // TODO: Teleport all players to the different spawn locations
                     return;

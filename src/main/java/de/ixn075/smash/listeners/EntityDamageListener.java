@@ -15,7 +15,7 @@ public class EntityDamageListener implements Listener {
         if (!e.getEntityType().equals(EntityType.ITEM)) {
             e.setCancelled(true);
         }
-        if (SmashPlugin.getPlugin().getGameStateManager().is(GameState.INGAME)) {
+        if (SmashPlugin.getPlugin().getGameStateManager().isGameState(GameState.INGAME)) {
             if (!e.getEntityType().equals(EntityType.PLAYER)) {
                 e.setDamage(0D);
             }

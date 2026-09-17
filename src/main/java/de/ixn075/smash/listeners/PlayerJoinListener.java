@@ -5,9 +5,11 @@ import de.ixn075.smash.builder.Item;
 import de.ixn075.smash.config.MiniMsg;
 import de.ixn075.smash.countdown.LobbyCountdown;
 import de.ixn075.smash.gamestate.GameState;
+import de.ixn075.smash.map.setup.MapSetup;
 import de.ixn075.smash.scoreboard.SmashScoreboard;
 import de.ixn075.smash.strings.Strings;
 import de.ixn075.smash.util.PlayerUtil;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -38,10 +40,12 @@ public class PlayerJoinListener implements Listener {
         player.setExp(0);
         player.setLevel(0);
 
-        if (SmashPlugin.getPlugin().getGameStateManager().is(GameState.LOBBY)) {
+        if (SmashPlugin.getPlugin().getGameStateManager().isGameState(GameState.LOBBY)) {
             player.setGameMode(GameMode.SURVIVAL);
             player.setAllowFlight(false);
             player.setFlying(false);
+
+            // player internals
 
             AttributeInstance attackSpeed = player.getAttribute(Attribute.ATTACK_SPEED);
             if (attackSpeed != null && attackSpeed.getValue() != 1024) {
@@ -54,7 +58,7 @@ public class PlayerJoinListener implements Listener {
             new Item(Material.MAP, 1, Strings.MAPS_SELECTION, List.of(MiniMsg.plain("---------------", DARK_GRAY), MiniMsg.plain("Map selection", GRAY), MiniMsg.plain("---------------", DARK_GRAY))).build(maps -> player.getInventory().setItem(6, maps));
 
             PersistentDataContainer pdc = player.getPersistentDataContainer();
-            NamespacedKey key = new NamespacedKey(SmashPlugin.getPlugin(), "damageCount");
+            NamespacedKey key = new NamespacedKey(SmashPlugin.getPlugin(), "damage");
 
             if (!pdc.has(key)) {
                 pdc.set(key, PersistentDataType.INTEGER, 0);
@@ -73,7 +77,15 @@ public class PlayerJoinListener implements Listener {
             display.remove();
             */
 
-            SmashScoreboard ss = new SmashScoreboard(player);
+            MapSetup ms = SmashPlugin.getPlugin().getSetups().get(player);
+            if (ms != null) {
+                player.sendMessage(MiniMsg.plain("Du hast noch ein Karten-Setup laufen, möchtest du fortfahren?", NamedTextColor.YELLOW));
+                player.sendMessage(MiniMsg.plain("Bestätige mit /setup resume", NamedTextColor.GREEN));
+                player.sendMessage(MiniMsg.plain("Breche ab mit /setup abort", NamedTextColor.RED));
+            }
+
+            SmashScoreboard ss = new SmashScoreboard(player, GameState.LOBBY);
+            ss.create();
             ss.show();
 
             PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.mini("config.strings.join").replaceText(builder -> builder.matchLiteral("$name").replacement(player.getName()))));
@@ -81,9 +93,9 @@ public class PlayerJoinListener implements Listener {
             if (online >= minPlayers) {
                 LobbyCountdown.start(); // Start countdown if minimum players are reached
             } else {
-                PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plain("There are still players missing to start the game.", RED)));
+                PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.mini("config.strings.players-missing")));
             }
-        } else if (SmashPlugin.getPlugin().getGameStateManager().is(GameState.INGAME)) {
+        } else if (SmashPlugin.getPlugin().getGameStateManager().isGameState(GameState.INGAME)) {
             player.setGameMode(GameMode.SPECTATOR);
             if (!player.getInventory().isEmpty()) player.getInventory().clear();
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {

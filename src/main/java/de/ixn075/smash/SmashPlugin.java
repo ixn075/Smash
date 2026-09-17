@@ -1,6 +1,7 @@
 package de.ixn075.smash;
 
 import de.ixn075.smash.character.CharacterManager;
+import de.ixn075.smash.character.CharacterPlayerManager;
 import de.ixn075.smash.commands.ConfigCommand;
 import de.ixn075.smash.commands.MapSetupCommand;
 import de.ixn075.smash.commands.StartCommand;
@@ -8,10 +9,10 @@ import de.ixn075.smash.commands.VoteCommand;
 import de.ixn075.smash.config.PluginConfig;
 import de.ixn075.smash.gamestate.GameStateManager;
 import de.ixn075.smash.listeners.*;
+import de.ixn075.smash.listeners.custom.CharacterChangeListener;
 import de.ixn075.smash.listeners.custom.GameStateChangeListener;
 import de.ixn075.smash.map.loader.MapLoader;
 import de.ixn075.smash.map.setup.MapSetup;
-import de.ixn075.smash.player.PlayerManager;
 import de.ixn075.smash.scoreboard.ScoreboardPlayerManager;
 import de.ixn075.smash.timer.GameTimer;
 import de.ixn075.smash.voting.VoteManager;
@@ -33,7 +34,7 @@ public class SmashPlugin extends JavaPlugin {
 
     private static SmashPlugin plugin;
     private GameStateManager gameStateManager;
-    private PlayerManager playerManager;
+    private CharacterPlayerManager characterPlayerManager;
     private ScoreboardPlayerManager scoreboardPlayerManager;
     private HashMap<Player, MapSetup> setups;
     private PluginConfig pluginConfig;
@@ -54,14 +55,12 @@ public class SmashPlugin extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        getLogger().info("Checking class version ...");
         double classVersion = NumberUtils.toDouble(System.getProperty("java.class.version"));
         if (classVersion < 65.0) {
-            getLogger().warning("You are using a unsupported Java Version! (class version: " + classVersion + ")");
+            getLogger().warning("You are using an unsupported java version! (class version: " + classVersion + ")");
             getLogger().warning("Please update to at least Java 21! (class version: 65.0)");
             getServer().getPluginManager().disablePlugin(this);
         }
-        getLogger().info("Check passed!");
     }
 
     @Override
@@ -72,11 +71,10 @@ public class SmashPlugin extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         } else {
-            pluginConfig.reload();
-            MapLoader.loadMaps();
-            if (pluginConfig.empty()) {
+            pluginConfig.load(false);
+            if (pluginConfig.isEmpty()) {
                 getLogger().warning("Configuration file is empty, resetting to default values.");
-                pluginConfig.defaultValues();
+                pluginConfig.setDefaultValues();
                 try {
                     pluginConfig.trySave();
                 } catch (IOException e) {
@@ -87,7 +85,7 @@ public class SmashPlugin extends JavaPlugin {
 
         setups = new HashMap<>();
         gameStateManager = new GameStateManager();
-        playerManager = new PlayerManager();
+        characterPlayerManager = new CharacterPlayerManager();
         scoreboardPlayerManager = new ScoreboardPlayerManager();
         voteManager = new VoteManager();
         characterManager = new CharacterManager();
@@ -121,6 +119,7 @@ public class SmashPlugin extends JavaPlugin {
         listeners.add(new PlayerQuitListener());
 
         // custom event
+        listeners.add(new CharacterChangeListener());
         listeners.add(new GameStateChangeListener());
 
         for (Listener listener : listeners) {
@@ -164,6 +163,8 @@ public class SmashPlugin extends JavaPlugin {
             world.setGameRule(GameRules.SHOW_DEATH_MESSAGES, false);
             world.setGameRule(GameRules.UNIVERSAL_ANGER, false);
             world.setGameRule(GameRules.MAX_ENTITY_CRAMMING, 8);
+
+            MapLoader.loadMaps();
         }
     }
 
@@ -171,8 +172,8 @@ public class SmashPlugin extends JavaPlugin {
         return gameStateManager;
     }
 
-    public PlayerManager getPlayerManager() {
-        return playerManager;
+    public CharacterPlayerManager getPlayerManager() {
+        return characterPlayerManager;
     }
 
     public ScoreboardPlayerManager getScoreboardManager() {
@@ -184,8 +185,9 @@ public class SmashPlugin extends JavaPlugin {
     }
 
     public PluginConfig getSmashConfig() {
-        if (pluginConfig == null)
+        if (pluginConfig == null) {
             plugin.getLogger().info("Config not initialized.");
+        }
         return pluginConfig;
     }
 

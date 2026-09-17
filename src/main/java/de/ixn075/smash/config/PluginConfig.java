@@ -55,13 +55,14 @@ public class PluginConfig {
         if (!changed) changed = true;
     }
 
-    public void defaultValues() {
+    public void setDefaultValues() {
         setValue("config.min-players", 2);
         setRichMessage("config.names.character_selection", MiniMsg.plain("<gold>Characters</gold>"));
         setRichMessage("config.names.maps_selection", MiniMsg.plain("<gold>Maps</gold>"));
         setRichMessage("config.strings.prefix", MiniMsg.plain("<gold>Smash</gold><dark_gray> => </dark_gray>"));
         setRichMessage("config.strings.join", MiniMsg.plain("<green>$name joined the server.</green>"));
         setRichMessage("config.strings.quit", MiniMsg.plain("<red>$name left the server.</red>"));
+        setRichMessage("config.strings.players-missing", MiniMsg.plain("<gold>There are still players missing to start the game.</gold>"));
         setRichMessage("config.strings.scoreboard.title", MiniMsg.plain("<gold>Smash</gold> <dark_gray>|</dark_gray> $timer"));
         setValue("config.maps", Collections.emptyList());
     }
@@ -156,11 +157,14 @@ public class PluginConfig {
         return configFile.exists();
     }
 
-    public boolean empty() {
+    public boolean isEmpty() {
         return fileConfiguration.getKeys(true).isEmpty();
     }
 
-    public void reload() {
+    public void load(boolean reload) {
+        if (reload) {
+            fileConfiguration = null;
+        }
         fileConfiguration = YamlConfiguration.loadConfiguration(configFile);
     }
 }

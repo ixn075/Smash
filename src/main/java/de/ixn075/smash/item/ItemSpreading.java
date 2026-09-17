@@ -20,7 +20,7 @@ public class ItemSpreading {
         this.random = new SecureRandom();
 
         task = Bukkit.getScheduler().runTaskTimer(SmashPlugin.getPlugin(), () -> {
-            if (SmashPlugin.getPlugin().getGameStateManager().is(GameState.INGAME)) {
+            if (SmashPlugin.getPlugin().getGameStateManager().isGameState(GameState.INGAME)) {
                 // Calculate random position within the radius
                 double angle = random.nextDouble() * 2 * Math.PI; // random angle
                 double distance = random.nextDouble() * radius; // random distance within the radius

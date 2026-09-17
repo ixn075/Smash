@@ -4,7 +4,6 @@ import de.ixn075.smash.SmashPlugin;
 import de.ixn075.smash.config.MiniMsg;
 import de.ixn075.smash.countdown.LobbyCountdown;
 import de.ixn075.smash.gamestate.GameState;
-import de.ixn075.smash.map.setup.MapSetup;
 import de.ixn075.smash.strings.Strings;
 import de.ixn075.smash.util.PlayerUtil;
 import org.bukkit.Bukkit;
@@ -27,26 +26,26 @@ public class PlayerQuitListener implements Listener {
 
         // Delete damage count from player
         PersistentDataContainer pdc = player.getPersistentDataContainer();
-        NamespacedKey key = new NamespacedKey(SmashPlugin.getPlugin(), "damageCount");
-        if (pdc.has(key)) {
-            pdc.remove(key); // Delete key from data container when existing
+        NamespacedKey dc = new NamespacedKey(SmashPlugin.getPlugin(), "damageCount");
+        NamespacedKey d = new NamespacedKey(SmashPlugin.getPlugin(), "damage");
+        if (pdc.has(dc)) {
+            pdc.remove(dc);  // Delete key from data container when existing
         }
 
-        // Remove player's setup when available.
-        MapSetup c = SmashPlugin.getPlugin().getSetups().get(player);
-        if (c != null)
-            c.delete();
+        if (pdc.has(d)) {
+            pdc.remove(d);
+        }
 
         int online = Bukkit.getOnlinePlayers().size() - 1;
         int minPlayers = SmashPlugin.getPlugin().getSmashConfig().getInt("config.min-players");
-        if (SmashPlugin.getPlugin().getGameStateManager().is(GameState.LOBBY)) {
+        if (SmashPlugin.getPlugin().getGameStateManager().isGameState(GameState.LOBBY)) {
             // lobby state
             PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.mini("config.strings.quit").replaceText(builder -> builder.matchLiteral("$name").replacement(player.getName()))));
             if (online < minPlayers) {
                 LobbyCountdown.forceStop();
                 Bukkit.broadcast(Strings.PREFIX.append(MiniMsg.plain("The countdown was stopped, not enough players online to proceed.", RED)));
             }
-        } else if (SmashPlugin.getPlugin().getGameStateManager().is(GameState.INGAME)) {
+        } else if (SmashPlugin.getPlugin().getGameStateManager().isGameState(GameState.INGAME)) {
             // in-game state
             stopServer();
         } else {

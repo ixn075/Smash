@@ -42,10 +42,11 @@ public class ConfigCommand extends Command {
             PluginConfig config = SmashPlugin.getPlugin().getSmashConfig();
             if (args[0].equalsIgnoreCase("reload")) {
                 sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Reloading...", YELLOW)));
-                config.reload();
+                config.load(true);
                 sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Configuration reloaded.", GREEN)));
             } else {
-                sender.sendMessage(Strings.PREFIX.append(Strings.UNKNOWN_COMMAND.replaceText(builder -> builder.matchLiteral("$command").replacement(args[0]))));
+                sender.sendMessage(Strings.PREFIX.append(Strings.UNKNOWN_COMMAND.replaceText(
+                        builder -> builder.matchLiteral("$command").replacement(args[0]))));
                 return false;
             }
         }
