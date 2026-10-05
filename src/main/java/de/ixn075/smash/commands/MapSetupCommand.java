@@ -7,6 +7,8 @@ import de.ixn075.smash.map.Map;
 import de.ixn075.smash.map.loader.MapLoader;
 import de.ixn075.smash.map.setup.MapSetup;
 import de.ixn075.smash.strings.Strings;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -74,15 +76,17 @@ public class MapSetupCommand extends Command {
                     return true;
                 }
                 case "complete" -> {
-                    player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Checking conditions...", YELLOW)));
                     if (SmashPlugin.getPlugin().getSetups().get(player) == null) {
                         player.sendMessage(Strings.PREFIX.append(Strings.NO_SETUP_STARTED));
                         return false;
                     }
+
+                    player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Checking conditions...", YELLOW)));
                     MapSetup mapSetup = SmashPlugin.getPlugin().getSetups().get(player);
+
                     if (mapSetup.countLocations() < mapSetup.getIndexSize()) {
                         player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Not enough spawn positions set! (" + mapSetup.countLocations() + " of " + mapSetup.getIndexSize() + ")", RED)));
-                        return true;
+                        return false;
                     }
                     Map map = mapSetup.finish();
                     if (map == null) {
@@ -90,28 +94,18 @@ public class MapSetupCommand extends Command {
                         return false;
                     }
                     player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Trying to write map...", YELLOW)));
-                    if (map.write()) {
-                        try {
-                            player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Writing...", YELLOW)));
-                            SmashPlugin.getPlugin().getSmashConfig().trySave();
-                            player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Map ('" + map.name() + "') saved.", GREEN)));
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
+                    try {
+                        if (map.write()) {
+                            player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Finished writing '" + map.getName() + "'.", GREEN)));
+                            return true;
+                        } else {
+                            player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Map '" + map.getName() + "' not cached because of an error.", RED)));
+                            player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Take a look inside the console to find out, what's wrong.", RED)));
+                            return false;
                         }
-                        return true;
-                    } else {
-                        player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Map '" + map.name() + "' not cached because of an error.", RED)));
-                        player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Take a look inside the console to find out, what's wrong.", RED)));
-                        return false;
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
-                }
-                case "set" -> {
-                    if (SmashPlugin.getPlugin().getSetups().get(player) == null) {
-                        player.sendMessage(Strings.PREFIX.append(Strings.NO_SETUP_STARTED));
-                        return false;
-                    }
-                    MapSetup mapSetup = SmashPlugin.getPlugin().getSetups().get(player);
-
                 }
                 default ->
                         player.sendMessage(Strings.PREFIX.append(Strings.UNKNOWN_COMMAND.replaceText(builder -> builder.matchLiteral("$command").replacement(args[0]))));
@@ -125,25 +119,16 @@ public class MapSetupCommand extends Command {
                     return false;
                 }
                 if (!NumberUtils.isParsable(args[1])) {
-                    sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Index '" + args[1] + "' is not a valid number.", RED)));
+                    sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("'" + args[1] + "' is not a valid index number.", RED)));
                     return false;
                 }
                 int index = NumberUtils.toInt(args[1]);
-                if (index < 1) {
-                    player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Positions below 1 are not allowed.", RED)));
-                    return false;
-                }
-                if (index > 32) {
-                    player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Positions cannot exceed 32.", RED)));
-                    return false;
-                }
-                if (index >= mapSetup.getIndexSize()) {
+                if (index < 0 || index >= mapSetup.getIndexSize()) {
                     player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("There is a set limit of " + mapSetup.getIndexSize() + " positions.", RED)));
                     return false;
                 }
                 mapSetup.setSpawnLocation(index, player.getLocation());
                 player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Spawn location ('" + index + "') set.", GREEN)));
-
             } else if (args[0].equalsIgnoreCase("start")) {
                 player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("You forgot the amount of spawn locations after the name.", GRAY)));
                 player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("- start <map-name> <spawn locations>", GREEN)));
@@ -156,7 +141,7 @@ public class MapSetupCommand extends Command {
             if (args[0].equalsIgnoreCase("begin")) {
                 // mapsetup begin[0] name[1] spawnlocations[2]
                 String mapName = args[1];
-                if (MapLoader.contains(mapName)) {
+                if (MapLoader.containsMap(mapName)) {
                     player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Map '" + mapName + "' already exists.", RED)));
                     return false;
                 }
@@ -171,7 +156,21 @@ public class MapSetupCommand extends Command {
                 }
                 int indexSize = NumberUtils.toInt(args[2]);
                 MapSetup setup = new MapSetup(player, mapName, indexSize);
-                player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Beginning ('" + setup.getName() + "') map setup.", GREEN)));
+
+                player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Do you want to start the '" + setup.getName() + "' setup?", YELLOW)));
+
+                Component yes = MiniMsg.plain("[YES]", GREEN)
+                        .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, ClickEvent.Payload.string("/yes")));
+                Component no = MiniMsg.plain("[NO]", RED)
+                        .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, ClickEvent.Payload.string("/mapsetup cancel")));
+
+                player.sendMessage(Strings.PREFIX.
+                        append(MiniMsg.plain("- ", GRAY)
+                                .append(yes)));
+                player.sendMessage(Strings.PREFIX.
+                        append(MiniMsg.plain("- ", GRAY)
+                                .append(no)));
+
                 return true;
             } else {
                 player.sendMessage(Strings.PREFIX.append(Strings.UNKNOWN_COMMAND.replaceText(builder -> builder.matchLiteral("$command").replacement(args[0]))));

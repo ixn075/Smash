@@ -1,21 +1,45 @@
 package de.ixn075.smash.map;
 
 import de.ixn075.smash.SmashPlugin;
-import de.ixn075.smash.config.PluginConfig;
+import de.ixn075.smash.config.PluginConfigFile;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.FileConfiguration;
 
-public record Map(String name, Location[] spawnLocations) {
+import java.io.IOException;
 
-    public boolean write() { // Must be saved ingame which can be done with "/config save".
-        if (spawnLocations == null || spawnLocations.length < 2) {
+public class Map {
+
+    public String name;
+    public Location[] locations;
+
+    public Map(String name, Location[] locations) {
+        this.name = name;
+        this.locations = locations;
+    }
+
+    public boolean write() throws IOException { // Must be saved ingame which can be done with "/config save".
+        if (locations == null || locations.length < 2) {
             return false;
         }
-        PluginConfig config = SmashPlugin.getPlugin().getSmashConfig();
-        if (config == null) {
-            SmashPlugin.getPlugin().getLogger().info("Could not get config file, exiting.");
-            return false;
-        }
-        config.setValue("maps." + name + ".spawnLocations", spawnLocations);
+        FileConfiguration config = SmashPlugin.getPlugin().getConfig();
+        config.set("maps." + name + ".spawnLocations", locations);
+        config.save(SmashPlugin.getPlugin().getDataFolder());
         return true;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Location[] getLocations() {
+        return locations;
+    }
+
+    public void setLocations(Location[] locations) {
+        this.locations = locations;
     }
 }

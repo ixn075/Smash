@@ -27,4 +27,8 @@ public class CharacterPlayerManager {
     public Map<Player, Character> getCharacters() {
         return characters;
     }
+
+    public void clearCharacters() {
+        characters.clear();
+    }
 }

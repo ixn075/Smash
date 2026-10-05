@@ -11,7 +11,7 @@ import java.util.List;
 public class StartCommand extends Command {
 
     public StartCommand(String name, String description, String usage) {
-        super(name, description, usage, List.of("s"));
+        super(name, description, usage, List.of());
     }
 
     /**
@@ -28,10 +28,18 @@ public class StartCommand extends Command {
             sender.sendMessage(Strings.PREFIX.append(Strings.ONLY_PLAYERS));
             return false;
         }
-        if (!player.hasPermission("smash.mapsetup")) {
+        if (!player.hasPermission("smash.start")) {
             player.sendMessage(Strings.PREFIX.append(Strings.PERMISSION_REQUIRED));
             return false;
         }
+
+        if (args.length != 0) {
+            return false;
+        }
+
+        // TODO: Implement start game mechanic logic
+
+
         return false;
     }
 }

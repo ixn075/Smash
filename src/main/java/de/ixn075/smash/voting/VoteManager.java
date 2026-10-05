@@ -9,9 +9,13 @@ public class VoteManager {
 
     private final HashMap<Player, Map> votes = new HashMap<>();
 
-    public void vote(Player player, Map map) {
-        if (!votes.containsKey(player))
+    public boolean vote(Player player, Map map) {
+        if (!votes.containsKey(player)) {
             votes.put(player, map);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public Map get(Player player) {

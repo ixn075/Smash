@@ -6,7 +6,7 @@ import de.ixn075.smash.commands.ConfigCommand;
 import de.ixn075.smash.commands.MapSetupCommand;
 import de.ixn075.smash.commands.StartCommand;
 import de.ixn075.smash.commands.VoteCommand;
-import de.ixn075.smash.config.PluginConfig;
+import de.ixn075.smash.config.PluginConfigFile;
 import de.ixn075.smash.gamestate.GameStateManager;
 import de.ixn075.smash.listeners.*;
 import de.ixn075.smash.listeners.custom.CharacterChangeListener;
@@ -27,6 +27,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -37,10 +38,11 @@ public class SmashPlugin extends JavaPlugin {
     private CharacterPlayerManager characterPlayerManager;
     private ScoreboardPlayerManager scoreboardPlayerManager;
     private HashMap<Player, MapSetup> setups;
-    private PluginConfig pluginConfig;
+    //private PluginConfigFile smashConfig;
     private CharacterManager characterManager;
     private VoteManager voteManager;
     private GameTimer gameTimer;
+    private List<Listener> listeners;
 
     public static SmashPlugin getPlugin() {
         return plugin;
@@ -65,23 +67,20 @@ public class SmashPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        pluginConfig = new PluginConfig("smash.yml");
-        if (!pluginConfig.exists()) {
-            getLogger().severe("Could not find configuration file, disable plugin.");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        } else {
-            pluginConfig.load(false);
-            if (pluginConfig.isEmpty()) {
-                getLogger().warning("Configuration file is empty, resetting to default values.");
-                pluginConfig.setDefaultValues();
-                try {
-                    pluginConfig.trySave();
-                } catch (IOException e) {
-                    getLogger().severe("Error while saving default values to config." + e);
-                }
-            }
-        }
+//        smashConfig = new PluginConfigFile();
+//        try {
+//            if (smashConfig.init()) {
+//                getLogger().info("Configuration initialized.");
+//            } else {
+//                getLogger().warning("Could not initialize configuration.");
+//                return;
+//            }
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+
+        this.saveDefaultConfig();
+        this.saveDefaultValues();
 
         setups = new HashMap<>();
         gameStateManager = new GameStateManager();
@@ -91,9 +90,9 @@ public class SmashPlugin extends JavaPlugin {
         characterManager = new CharacterManager();
         gameTimer = new GameTimer();
 
-        if (getSmashConfig().mapsEmpty()) {
-            getLogger().warning("No maps found.");
-        }
+//        if (getSmashConfig().mapsEmpty()) {
+//            getLogger().warning("No maps found.");
+//        }
 
         // DEACTIVATE: DEBUG COMPLICATIONS
         /*if (getSmashConfig().getInt("min-players") < 2) {
@@ -102,7 +101,7 @@ public class SmashPlugin extends JavaPlugin {
             return;
         }*/
 
-        List<Listener> listeners = new ArrayList<>();
+        listeners = new ArrayList<>();
 
         listeners.add(new AsyncPlayerPreLoginListener());
         listeners.add(new BlockBreakListener());
@@ -163,9 +162,51 @@ public class SmashPlugin extends JavaPlugin {
             world.setGameRule(GameRules.SHOW_DEATH_MESSAGES, false);
             world.setGameRule(GameRules.UNIVERSAL_ANGER, false);
             world.setGameRule(GameRules.MAX_ENTITY_CRAMMING, 8);
-
-            MapLoader.loadMaps();
         }
+
+        MapLoader.loadMaps();
+    }
+
+    public void saveDefaultValues() {
+        this.getConfig().set("min-players-count", 2);
+
+        this.getConfig().set("names.character-selection", "<gold>Characters</gold>");
+        this.getConfig().set("names.maps-selection", "<gold>Maps</gold>");
+
+        this.getConfig().set("strings.prefix", "<gold>Smash</gold><dark_gray> => </dark_gray>");
+
+        this.getConfig().set("strings.join", "<green>$name joined the server.</green>");
+        this.getConfig().set("strings.quit", "<red>$name left the server.</red>");
+        this.getConfig().set("strings.players-missing", "<gold>There are still players missing to start the game.</gold>");
+        this.getConfig().set("strings.scoreboard.title", "<gold>Smash</gold> <dark_gray>|</dark_gray> $timer");
+
+        this.getConfig().set("maps", Collections.emptyList());
+    }
+
+    @Override
+    public void onDisable() {
+
+        // Plugin disable
+
+        getLogger().info("Deleting cache of all loaded maps.");
+        MapLoader.clearMaps();
+
+        getLogger().info("Deleting cache of all loaded characters.");
+        characterPlayerManager.clearCharacters();
+
+        getLogger().info("Force stopping game timer.");
+        gameTimer.forceStop();
+
+        getLogger().info("Force stopping all running game setups.");
+        setups.clear();
+
+        getLogger().info("Cleanup all remaining listeners.");
+        listeners.clear();
+
+        // Bukkit disable
+
+        getLogger().info("Cleanup all remaining commands.");
+        getServer().getCommandMap().clearCommands();
     }
 
     public GameStateManager getGameStateManager() {
@@ -182,13 +223,6 @@ public class SmashPlugin extends JavaPlugin {
 
     public HashMap<Player, MapSetup> getSetups() {
         return setups;
-    }
-
-    public PluginConfig getSmashConfig() {
-        if (pluginConfig == null) {
-            plugin.getLogger().info("Config not initialized.");
-        }
-        return pluginConfig;
     }
 
     public VoteManager getVoteManager() {

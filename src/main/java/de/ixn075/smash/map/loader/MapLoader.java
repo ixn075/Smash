@@ -1,10 +1,11 @@
 package de.ixn075.smash.map.loader;
 
 import de.ixn075.smash.SmashPlugin;
-import de.ixn075.smash.config.PluginConfig;
+import de.ixn075.smash.config.PluginConfigFile;
 import de.ixn075.smash.map.Map;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,10 +13,10 @@ import java.util.HashMap;
 
 public abstract class MapLoader {
 
-    private static final PluginConfig config = SmashPlugin.getPlugin().getSmashConfig();
+    private static final FileConfiguration config = SmashPlugin.getPlugin().getConfig();
     private static final HashMap<String, Map> loadedMaps = new HashMap<>();
 
-    public static boolean contains(String name) {
+    public static boolean containsMap(String name) {
         return config.contains("maps." + name);
     }
 
@@ -28,22 +29,24 @@ public abstract class MapLoader {
     }
 
     public static void loadMaps() {
-        ConfigurationSection section = config.getSection("maps");
-        if (section == null) {
-            return;
-        }
-        if (!loadedMaps.isEmpty()) {
-            loadedMaps.clear();
-        }
-        for (String mapName : section.getKeys(false)) {
-            Map map = loadMap(mapName);
-            loadedMaps.put(mapName, map);
-        }
+        ConfigurationSection section = config.getConfigurationSection("maps");
+        if (section == null) return;
+        section.getKeys(false).forEach((key) -> {
+            loadMap(section.getString(key));
+        });
     }
 
     @Contract("_ -> new")
-    private static @NotNull Map loadMap(String mapName) {
-        Location[] locations = config.getLocations("maps." + mapName + ".spawnLocations");
+    public static Map loadMap(String mapName) {
+        ConfigurationSection configMapsSection = config.getConfigurationSection("maps");
+        if (configMapsSection == null) return null;
+        for (String key : configMapsSection.getKeys(false)) {
+            for (String value : configMapsSection.getStringList(key)) {
+
+            }
+        }
+
+        SmashPlugin.getPlugin().getLogger().info(locations.length + " spawn locations loaded.");
         if (locations.length == 0) {
             throw new IllegalArgumentException("Locations for map '" + mapName + "' are empty.");
         }
@@ -58,5 +61,9 @@ public abstract class MapLoader {
      */
     public static HashMap<String, Map> getLoadedMaps() {
         return loadedMaps;
+    }
+
+    public static void clearMaps() {
+        loadedMaps.clear();
     }
 }

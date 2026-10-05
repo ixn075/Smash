@@ -23,6 +23,15 @@ public class GameTimer {
         task.cancel();
     }
 
+    public void forceStop() {
+        if (task == null) {
+            return;
+        }
+        if (!task.isCancelled() || task.getTaskId() != -1) {
+            task.cancel();
+        }
+    }
+
     public boolean isRunning() {
         if (task == null) {
             return false;

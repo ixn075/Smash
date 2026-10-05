@@ -65,7 +65,7 @@ public class PlayerJoinListener implements Listener {
             }
 
             int online = Bukkit.getOnlinePlayers().size();
-            int minPlayers = SmashPlugin.getPlugin().getSmashConfig().getInt("config.min-players");
+            int minPlayers = SmashPlugin.getPlugin().getConfig().getInt("min-players");
 
             /*
             TextDisplay display = player.getWorld().spawn(player.getLocation(), TextDisplay.class, entity -> {

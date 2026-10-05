@@ -37,7 +37,7 @@ public class PlayerQuitListener implements Listener {
         }
 
         int online = Bukkit.getOnlinePlayers().size() - 1;
-        int minPlayers = SmashPlugin.getPlugin().getSmashConfig().getInt("config.min-players");
+        int minPlayers = SmashPlugin.getPlugin().getConfig().getInt("min-players");
         if (SmashPlugin.getPlugin().getGameStateManager().isGameState(GameState.LOBBY)) {
             // lobby state
             PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.mini("config.strings.quit").replaceText(builder -> builder.matchLiteral("$name").replacement(player.getName()))));

@@ -11,6 +11,7 @@ import de.ixn075.smash.map.loader.MapLoader;
 import de.ixn075.smash.strings.Strings;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -52,18 +53,23 @@ public class PlayerInteractListener implements Listener {
                 e.setCancelled(true);
             }
             case MAP -> {
-                if (SmashPlugin.getPlugin().getSmashConfig().mapsEmpty()) {
+                ConfigurationSection readMaps = SmashPlugin.getPlugin().getConfig().getConfigurationSection("maps");
+                if (readMaps == null) {
+                    player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("No maps found in configuration file.", NamedTextColor.RED)));
+                    return;
+                }
+                if (readMaps.getValues(false).isEmpty()) {
                     player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("There are not maps configured.", NamedTextColor.RED)));
                     player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Create maps with /setup start.", NamedTextColor.YELLOW)));
                     e.setCancelled(true);
                     return;
                 }
+
                 new GameInventory(Strings.MAPS_SELECTION).edit(editor -> {
-                    MapLoader.loadMaps();
-                    for (String mapName : MapLoader.getLoadedMaps().keySet()) {
-                        editor.add(new Item(Material.PAPER, 1, MiniMsg.plain(mapName, GREEN)).build());
-                        e.setCancelled(true);
-                    }
+                    readMaps.getValues(false).forEach((key, value) -> {
+                        editor.add(new Item(Material.PAPER, 1, MiniMsg.plain(key, GREEN)).build());
+                    });
+                    e.setCancelled(true);
                 }).accept(player::openInventory);
                 e.setCancelled(true);
             }
