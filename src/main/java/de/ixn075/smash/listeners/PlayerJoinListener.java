@@ -54,8 +54,14 @@ public class PlayerJoinListener implements Listener {
 
             if (!player.getInventory().isEmpty()) player.getInventory().clear();
 
-            new Item(Material.CHEST, 1, Strings.CHARACTER_SELECTION, List.of(MiniMsg.plain("-----------------", DARK_GRAY), MiniMsg.plain("Character selection", GRAY), MiniMsg.plain("-----------------", DARK_GRAY))).build(characters -> player.getInventory().setItem(2, characters));
-            new Item(Material.MAP, 1, Strings.MAPS_SELECTION, List.of(MiniMsg.plain("---------------", DARK_GRAY), MiniMsg.plain("Map selection", GRAY), MiniMsg.plain("---------------", DARK_GRAY))).build(maps -> player.getInventory().setItem(6, maps));
+            new Item(Material.CHEST, 1, Strings.CHARACTER_SELECTION,
+                    List.of(MiniMsg.plainString("-----------------", DARK_GRAY),
+                            MiniMsg.plainString("Character selection", GRAY), MiniMsg.plainString("-----------------", DARK_GRAY)))
+                    .build(characters -> player.getInventory().setItem(2, characters));
+            new Item(Material.MAP, 1, Strings.MAPS_SELECTION,
+                    List.of(MiniMsg.plainString("---------------", DARK_GRAY),
+                            MiniMsg.plainString("Map selection", GRAY), MiniMsg.plainString("---------------", DARK_GRAY)))
+                    .build(maps -> player.getInventory().setItem(6, maps));
 
             PersistentDataContainer pdc = player.getPersistentDataContainer();
             NamespacedKey key = new NamespacedKey(SmashPlugin.getPlugin(), "damage");
@@ -65,7 +71,7 @@ public class PlayerJoinListener implements Listener {
             }
 
             int online = Bukkit.getOnlinePlayers().size();
-            int minPlayers = SmashPlugin.getPlugin().getConfig().getInt("min-players");
+            int minPlayers = MiniMsg.integer("min-players-count");
 
             /*
             TextDisplay display = player.getWorld().spawn(player.getLocation(), TextDisplay.class, entity -> {
@@ -79,30 +85,26 @@ public class PlayerJoinListener implements Listener {
 
             MapSetup ms = SmashPlugin.getPlugin().getSetups().get(player);
             if (ms != null) {
-                player.sendMessage(MiniMsg.plain("Du hast noch ein Karten-Setup laufen, möchtest du fortfahren?", NamedTextColor.YELLOW));
-                player.sendMessage(MiniMsg.plain("Bestätige mit /setup resume", NamedTextColor.GREEN));
-                player.sendMessage(MiniMsg.plain("Breche ab mit /setup abort", NamedTextColor.RED));
+                player.sendMessage(MiniMsg.plainString("Du hast noch ein Karten-Setup laufen, möchtest du fortfahren?", NamedTextColor.YELLOW));
+                player.sendMessage(MiniMsg.plainString("Bestätige mit /setup resume", NamedTextColor.GREEN));
+                player.sendMessage(MiniMsg.plainString("Breche ab mit /setup abort", NamedTextColor.RED));
             }
 
             SmashScoreboard ss = new SmashScoreboard(player, GameState.LOBBY);
             ss.create();
             ss.show();
 
-            PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.mini("config.strings.join").replaceText(builder -> builder.matchLiteral("$name").replacement(player.getName()))));
+            PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.string("strings.join").replaceText(builder -> builder.matchLiteral("$name").replacement(player.getName()))));
             // minPlayers > 1
             if (online >= minPlayers) {
                 LobbyCountdown.start(); // Start countdown if minimum players are reached
             } else {
-                PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.mini("config.strings.players-missing")));
+                PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.string("strings.players-missing")));
             }
         } else if (SmashPlugin.getPlugin().getGameStateManager().isGameState(GameState.INGAME)) {
             player.setGameMode(GameMode.SPECTATOR);
             if (!player.getInventory().isEmpty()) player.getInventory().clear();
-            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if (onlinePlayer.getGameMode().equals(GameMode.SPECTATOR)) {
-                    onlinePlayer.sendMessage(MiniMsg.plain("[+] " + player.getName(), GREEN));
-                }
-            }
+            player.sendMessage(MiniMsg.plainString("You are now in spectator mode.", YELLOW));
         }
 
         e.joinMessage(empty());

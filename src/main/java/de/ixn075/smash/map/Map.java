@@ -1,7 +1,6 @@
 package de.ixn075.smash.map;
 
 import de.ixn075.smash.SmashPlugin;
-import de.ixn075.smash.config.PluginConfigFile;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -21,9 +20,9 @@ public class Map {
         if (locations == null || locations.length < 2) {
             return false;
         }
-        FileConfiguration config = SmashPlugin.getPlugin().getConfig();
+        FileConfiguration config = SmashPlugin.getPlugin().getFileConfiguration();
         config.set("maps." + name + ".spawnLocations", locations);
-        config.save(SmashPlugin.getPlugin().getDataFolder());
+        config.save(SmashPlugin.getPlugin().getConfigFile());
         return true;
     }
 

@@ -30,10 +30,10 @@ public class LobbyCountdown {
                             player.getInventory().clear();
                         }
                     }
-                    PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plain("The game starts in " + seconds + " seconds.", YELLOW)));
+                    PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plainString("The game starts in " + seconds + " seconds.", YELLOW)));
                 }
                 case 1 ->
-                        PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plain("The game starts in " + seconds + " second.", YELLOW)));
+                        PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plainString("The game starts in " + seconds + " second.", YELLOW)));
                 case 0 -> {
                     forceStop();
 
@@ -43,7 +43,7 @@ public class LobbyCountdown {
                     }
 
                     SmashPlugin.getPlugin().getGameStateManager().set(GameState.INGAME, false);
-                    PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plain("Let the game begin!", GREEN)));
+                    PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plainString("Let the game begin!", GREEN)));
                     // TODO: Teleport all players to the different spawn locations
                     return;
                 }

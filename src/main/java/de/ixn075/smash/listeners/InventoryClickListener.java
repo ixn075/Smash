@@ -45,7 +45,7 @@ public class InventoryClickListener implements Listener {
         Component itemName = meta.itemName();
 
         if (v.title().equals(Strings.CHARACTER_SELECTION)) {
-            Component m = MiniMsg.plain("Selected $name.", NamedTextColor.GREEN);
+            Component m = MiniMsg.plainString("Selected $name.", NamedTextColor.GREEN);
             CharacterPlayerManager pm = SmashPlugin.getPlugin().getPlayerManager();
             cm = SmashPlugin.getPlugin().getCharacterManager();
             if (itemName.equals(cm.MARIO.getName())) {
@@ -60,7 +60,7 @@ public class InventoryClickListener implements Listener {
             e.setCancelled(true);
             return;
         } else {
-            p.sendMessage(MiniMsg.plain("Slot nicht belegt!", NamedTextColor.RED));
+            p.sendMessage(MiniMsg.plainString("Slot nicht belegt!", NamedTextColor.RED));
             e.setCancelled(true);
             return;
         }

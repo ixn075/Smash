@@ -30,12 +30,12 @@ public class GameStateChangeListener implements Listener {
                     player.setAllowFlight(false);
                     player.setFlying(false);
                     player.getInventory().clear();
-                    player.sendTitlePart(TitlePart.TITLE, MiniMsg.plain("Hooray!", GREEN));
-                    player.sendTitlePart(TitlePart.SUBTITLE, MiniMsg.plain("The game begins!", GRAY));
+                    player.sendTitlePart(TitlePart.TITLE, MiniMsg.plainString("Hooray!", GREEN));
+                    player.sendTitlePart(TitlePart.SUBTITLE, MiniMsg.plainString("The game begins!", GRAY));
                     player.sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ZERO, Duration.ofMillis(2500), Duration.ZERO));
 
-                    ItemStack chestItem = new Item(Material.CHEST, 3, MiniMsg.plain("CHEST", RED)).build();
-                    ItemStack bedrockItem = new Item(Material.BEDROCK, 3, MiniMsg.plain("BEDROCK", RED)).build();
+                    ItemStack chestItem = new Item(Material.CHEST, 3, MiniMsg.plainString("CHEST", RED)).build();
+                    ItemStack bedrockItem = new Item(Material.BEDROCK, 3, MiniMsg.plainString("BEDROCK", RED)).build();
                     assert chestItem != null;
                     assert bedrockItem != null;
                     // new ItemSpreading(player.getLocation(), 5, List.of(chestItem, bedrockItem));
@@ -51,7 +51,7 @@ public class GameStateChangeListener implements Listener {
                     player.setAllowFlight(false);
                     player.setFlying(false);
                     player.getInventory().clear();
-                    player.sendTitlePart(TitlePart.TITLE, MiniMsg.plain("End of the game!", RED));
+                    player.sendTitlePart(TitlePart.TITLE, MiniMsg.plainString("End of the game!", RED));
                     player.sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ZERO, Duration.ofMillis(2000), Duration.ZERO));
                 }
                 EndCountdown.start();

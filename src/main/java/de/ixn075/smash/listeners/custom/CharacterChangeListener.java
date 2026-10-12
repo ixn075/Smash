@@ -23,11 +23,11 @@ public class CharacterChangeListener implements Listener {
         Character after = e.getCharacterAfter();
 
         if (before == null) {
-            p.sendActionBar(MiniMsg.plain("Your character has been set to $name.", NamedTextColor.GREEN).
+            p.sendActionBar(MiniMsg.plainString("Your character has been set to $name.", NamedTextColor.GREEN).
                     replaceText(builder ->
                             builder.matchLiteral("$name").replacement(after.getName())));
         } else {
-            p.sendActionBar(MiniMsg.plain("Your character has been changed to $name.", NamedTextColor.GREEN).
+            p.sendActionBar(MiniMsg.plainString("Your character has been changed to $name.", NamedTextColor.GREEN).
                     replaceText(builder ->
                             builder.matchLiteral("$name").replacement(after.getName())));
         }

@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 
@@ -20,12 +21,14 @@ public class VoteCommand extends Command {
     private final VoteManager vm = SmashPlugin.getPlugin().getVoteManager();
 
     public VoteCommand(String name, String description, String usage) {
-        super(name, description, usage, List.of("v"));
+        super(name, description, usage, List.of());
     }
 
     public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String label, String @NotNull [] args) {
         if (args.length == 1) {
-            return MapLoader.getLoadedMaps().keySet().stream().filter(s -> s.startsWith(args[0])).toList();
+            // Old line as the loaded maps list was a hashmap
+            //return MapLoader.getLoadedMaps().keySet().stream().filter(s -> s.startsWith(args[0])).toList();
+            return MapLoader.getCachedMaps().stream().map(Map::getName).collect(Collectors.toList());
         }
         return List.of();
     }
@@ -47,20 +50,20 @@ public class VoteCommand extends Command {
         if (args.length == 1) {
             Map map = MapLoader.getMapOfName(args[0]);
             if (map == null) {
-                player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Map '" + args[0] + "' doesn't exist.", RED)));
+                player.sendMessage(Strings.PREFIX.append(MiniMsg.plainString("Map '" + args[0] + "' doesn't exist.", RED)));
                 return false;
             }
             boolean voted = vm.vote(player, map);
 
 
             if (!voted) {
-                player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("You cannot vote for '" + args[0] + "' again.", RED)));
+                player.sendMessage(Strings.PREFIX.append(MiniMsg.plainString("You cannot vote for '" + args[0] + "' again.", RED)));
             } else {
-                player.sendMessage(Strings.PREFIX.append(MiniMsg.plain("You voted for '" + args[0] + "'.", GREEN)));
+                player.sendMessage(Strings.PREFIX.append(MiniMsg.plainString("You voted for '" + args[0] + "'.", GREEN)));
             }
         } else {
-            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("Use following arguments:", GRAY)));
-            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plain("/vote <map>", GREEN)));
+            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plainString("Use following arguments:", GRAY)));
+            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plainString("/vote <map>", GREEN)));
         }
         return false;
     }

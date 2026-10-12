@@ -6,22 +6,32 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 public class MiniMsg {
 
-    private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
-    private static final FileConfiguration CONFIG = SmashPlugin.getPlugin().getConfig();
+    private static MiniMessage MINI_MESSAGE;
+    private static FileConfiguration CONFIG;
 
-    public static @Nullable Component mini(String path) {
-        return CONFIG.getRichMessage(path);
+    public static void init() {
+        MINI_MESSAGE = MiniMessage.miniMessage();
+        CONFIG = SmashPlugin.getPlugin().getFileConfiguration();
     }
 
-    public static <R extends String> @NotNull Component plain(R message) {
+    public static @NonNull Component string(String path) {
+        String string = CONFIG.getString(path);
+        return plainString(string);
+    }
+
+    public static int integer(String path) {
+        return CONFIG.getInt(path);
+    }
+
+    public static <R extends String> @NotNull Component plainString(R message) {
         return MINI_MESSAGE.deserialize(message);
     }
 
-    public static <R extends String> @NotNull Component plain(R message, NamedTextColor color) {
-        return plain(message).color(color);
+    public static <R extends String> @NotNull Component plainString(R message, NamedTextColor color) {
+        return plainString(message).color(NamedTextColor.nearestTo(color));
     }
 }

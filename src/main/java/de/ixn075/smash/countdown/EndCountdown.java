@@ -22,11 +22,11 @@ public class EndCountdown {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(SmashPlugin.getPlugin(), () -> {
             switch (seconds) {
                 case 15, 10, 5, 4, 3, 2 ->
-                        PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plain("The server restarts in " + seconds + " seconds.", YELLOW)));
+                        PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plainString("The server restarts in " + seconds + " seconds.", YELLOW)));
                 case 1 ->
-                        PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plain("The server restarts in " + seconds + " second.", YELLOW)));
+                        PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plainString("The server restarts in " + seconds + " second.", YELLOW)));
                 case 0 -> {
-                    PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plain("Restarting...", YELLOW)));
+                    PlayerUtil.broadcast(Strings.PREFIX.append(MiniMsg.plainString("Restarting...", YELLOW)));
                     Bukkit.shutdown();
                     return;
                 }

@@ -1,52 +1,56 @@
 package de.ixn075.smash.map.loader;
 
 import de.ixn075.smash.SmashPlugin;
-import de.ixn075.smash.config.PluginConfigFile;
 import de.ixn075.smash.map.Map;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
-import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public abstract class MapLoader {
 
-    private static final FileConfiguration config = SmashPlugin.getPlugin().getConfig();
-    private static final HashMap<String, Map> loadedMaps = new HashMap<>();
+    private static final FileConfiguration config = SmashPlugin.getPlugin().getFileConfiguration();
+    private static final List<Map> cachedMaps = new LinkedList<>();
 
     public static boolean containsMap(String name) {
         return config.contains("maps." + name);
     }
 
-    private static void removeMap(String name) {
-        loadedMaps.remove(name);
-    }
-
-    public static Map getMapOfName(String name) {
-        return loadedMaps.get(name);
+    public static @Nullable Map getMapOfName(String name) {
+        for (Map map : cachedMaps) {
+            if (map.getName().equalsIgnoreCase(name)) {
+                return map;
+            }
+        }
+        return null;
     }
 
     public static void loadMaps() {
         ConfigurationSection section = config.getConfigurationSection("maps");
         if (section == null) return;
         section.getKeys(false).forEach((key) -> {
-            loadMap(section.getString(key));
+            Map map = loadMap(section.getString(key));
+            cachedMaps.add(map);
         });
     }
 
     @Contract("_ -> new")
-    public static Map loadMap(String mapName) {
-        ConfigurationSection configMapsSection = config.getConfigurationSection("maps");
+    public static @Nullable Map loadMap(String mapName) {
+        ConfigurationSection configMapsSection = config.getConfigurationSection("maps"); // Maps section in config
         if (configMapsSection == null) return null;
-        for (String key : configMapsSection.getKeys(false)) {
-            for (String value : configMapsSection.getStringList(key)) {
 
+        Location[] locations = new Location[configMapsSection.getKeys(false).size()];
+        for (String key : configMapsSection.getKeys(false)) { // All map names from maps section (e.g. maps.Desert; maps.Temple)
+            for (String value : configMapsSection.getStringList(key + ".spawnLocations")) { //
+                Location location = config.getLocation(value);
+                locations = new Location[]{location};
             }
         }
 
-        SmashPlugin.getPlugin().getLogger().info(locations.length + " spawn locations loaded.");
         if (locations.length == 0) {
             throw new IllegalArgumentException("Locations for map '" + mapName + "' are empty.");
         }
@@ -59,11 +63,13 @@ public abstract class MapLoader {
      *
      * @return the loaded maps from the HashMap
      */
-    public static HashMap<String, Map> getLoadedMaps() {
-        return loadedMaps;
+    public static List<Map> getCachedMaps() {
+        return cachedMaps;
     }
 
     public static void clearMaps() {
-        loadedMaps.clear();
+        for (Map map : cachedMaps) {
+            cachedMaps.remove(map);
+        }
     }
 }

@@ -11,16 +11,13 @@ import java.util.function.Consumer;
 
 public class GameInventory {
 
-    private final Inventory inventory;
-    private final Component name;
-    private final InventoryEditor editor;
-    private final int slots;
+    private Inventory inventory;
+    private Component name;
+    private InventoryEditor editor;
+    private int slots;
 
     public GameInventory(Component name) throws IllegalArgumentException {
-        this.slots = 9; // Default value
-        this.name = name;
-        this.inventory = Bukkit.createInventory(null, slots, name);
-        this.editor = new InventoryEditor(this);
+        new GameInventory(name, 1);
     }
 
     public GameInventory(Component name, int factor) throws IllegalArgumentException {
