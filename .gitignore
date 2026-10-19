@@ -1,7 +1,5 @@
 .gradle/
-
-### MockBukkit Tests ###
-plugins/Smash/
+run/
 
 ### IntelliJ IDEA ###
 .idea/

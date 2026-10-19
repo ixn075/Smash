@@ -9,6 +9,7 @@ import de.ixn075.smash.character.CharacterManager;
 import de.ixn075.smash.config.MiniMsg;
 import de.ixn075.smash.strings.Strings;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -27,9 +28,6 @@ import static net.kyori.adventure.text.format.NamedTextColor.GREEN;
 
 public class PlayerInteractListener implements Listener {
 
-    private final FileConfiguration config = SmashPlugin.getPlugin().getFileConfiguration();
-    private CharacterManager cm;
-
     @EventHandler
     void on(@NotNull PlayerInteractEvent e) {
         if (!e.getAction().equals(Action.RIGHT_CLICK_AIR)) {
@@ -37,7 +35,8 @@ public class PlayerInteractListener implements Listener {
             return;
         }
         Player player = e.getPlayer();
-        cm = SmashPlugin.getPlugin().getCharacterManager();
+        FileConfiguration config = SmashPlugin.getPlugin().getFileConfiguration();
+        CharacterManager cm = SmashPlugin.getPlugin().getCharacterManager();
 
         switch (e.getMaterial()) {
             case CHEST -> {
@@ -53,24 +52,32 @@ public class PlayerInteractListener implements Listener {
                 e.setCancelled(true);
             }
             case MAP -> {
-                ConfigurationSection readMaps = config.getConfigurationSection("maps");
+                List<?> readMaps = config.getList("maps");
                 if (readMaps == null) {
                     player.sendMessage(Strings.PREFIX.append(MiniMsg.plainString("No maps found in configuration file.", NamedTextColor.RED)));
                     return;
                 }
-                if (readMaps.getValues(false).isEmpty()) {
+                if (readMaps.isEmpty()) {
                     player.sendMessage(Strings.PREFIX.append(MiniMsg.plainString("There are not maps configured.", NamedTextColor.RED)));
                     player.sendMessage(Strings.PREFIX.append(MiniMsg.plainString("Create maps with /setup start.", NamedTextColor.YELLOW)));
                     e.setCancelled(true);
                     return;
                 }
 
-                new GameInventory(Strings.MAPS_SELECTION).edit(editor -> {
-                    readMaps.getValues(false).forEach((key, value) -> {
-                        editor.add(new Item(Material.PAPER, 1, MiniMsg.plainString(key, GREEN)).build());
-                    });
-                    e.setCancelled(true);
-                }).accept(player::openInventory);
+                for (Object map  : readMaps) {
+                    player.sendMessage(Strings.PREFIX.append(MiniMsg.plainString("Map: " + map.toString(), NamedTextColor.YELLOW)));
+                }
+
+//                new GameInventory(Strings.MAPS_SELECTION).edit(editor -> {
+//                    for (Object map : readMaps) {
+//                        Location location = (Location) map;
+//
+//                    }
+//                    readMaps.getValues(false).forEach((key, value) -> {
+//                        editor.add(new Item(Material.PAPER, 1, MiniMsg.plainString(key, GREEN)).build());
+//                    });
+//                    e.setCancelled(true);
+//                }).accept(player::openInventory);
                 e.setCancelled(true);
             }
             default -> e.setCancelled(true);

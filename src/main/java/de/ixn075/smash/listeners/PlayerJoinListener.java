@@ -49,19 +49,13 @@ public class PlayerJoinListener implements Listener {
 
             AttributeInstance attackSpeed = player.getAttribute(Attribute.ATTACK_SPEED);
             if (attackSpeed != null && attackSpeed.getValue() != 1024) {
-                attackSpeed.setBaseValue(1024); // Remove 1.9+ cooldown
+                attackSpeed.setBaseValue(1024); // Remove 1.9+ hit cooldown
             }
 
             if (!player.getInventory().isEmpty()) player.getInventory().clear();
 
-            new Item(Material.CHEST, 1, Strings.CHARACTER_SELECTION,
-                    List.of(MiniMsg.plainString("-----------------", DARK_GRAY),
-                            MiniMsg.plainString("Character selection", GRAY), MiniMsg.plainString("-----------------", DARK_GRAY)))
-                    .build(characters -> player.getInventory().setItem(2, characters));
-            new Item(Material.MAP, 1, Strings.MAPS_SELECTION,
-                    List.of(MiniMsg.plainString("---------------", DARK_GRAY),
-                            MiniMsg.plainString("Map selection", GRAY), MiniMsg.plainString("---------------", DARK_GRAY)))
-                    .build(maps -> player.getInventory().setItem(6, maps));
+            new Item(Material.CHEST, 1, Strings.CHARACTER_SELECTION, List.of(MiniMsg.plainString("-----------------", DARK_GRAY), MiniMsg.plainString("Character selection", GRAY), MiniMsg.plainString("-----------------", DARK_GRAY))).build(characters -> player.getInventory().setItem(2, characters));
+            new Item(Material.MAP, 1, Strings.MAPS_SELECTION, List.of(MiniMsg.plainString("---------------", DARK_GRAY), MiniMsg.plainString("Map selection", GRAY), MiniMsg.plainString("---------------", DARK_GRAY))).build(maps -> player.getInventory().setItem(6, maps));
 
             PersistentDataContainer pdc = player.getPersistentDataContainer();
             NamespacedKey key = new NamespacedKey(SmashPlugin.getPlugin(), "damage");

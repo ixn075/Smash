@@ -18,8 +18,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class InventoryClickListener implements Listener {
 
-    private CharacterManager cm;
-
     @EventHandler
     void on(@NotNull InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
@@ -47,7 +45,7 @@ public class InventoryClickListener implements Listener {
         if (v.title().equals(Strings.CHARACTER_SELECTION)) {
             Component m = MiniMsg.plainString("Selected $name.", NamedTextColor.GREEN);
             CharacterPlayerManager pm = SmashPlugin.getPlugin().getPlayerManager();
-            cm = SmashPlugin.getPlugin().getCharacterManager();
+            CharacterManager cm = SmashPlugin.getPlugin().getCharacterManager();
             if (itemName.equals(cm.MARIO.getName())) {
                 pm.setCharacter(p, cm.MARIO);
             } else if (itemName.equals(cm.DONKEY_KONG.getName())) {

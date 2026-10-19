@@ -8,12 +8,15 @@ import java.util.List;
 
 public class CharacterManager {
 
-    public Character MARIO =
-            new Character(0, MiniMsg.plainString("Mario", NamedTextColor.RED), List.of(Ability.JUMP_BOOST));
-    public Character DONKEY_KONG =
-            new Character(1, MiniMsg.plainString("Donkey Kong", NamedTextColor.GOLD), List.of(Ability.NO_KNOCKBACK));
-    public Character FLASH =
-            new Character(2, MiniMsg.plainString("Flash", NamedTextColor.RED), List.of(Ability.SPEED_BOOST));
+    public Character MARIO;
+    public Character DONKEY_KONG;
+    public Character FLASH;
+
+    public void init() {
+        MARIO = new Character(0, MiniMsg.plainString("Mario", NamedTextColor.RED), List.of(Ability.JUMP_BOOST));
+        DONKEY_KONG = new Character(1, MiniMsg.plainString("Donkey Kong", NamedTextColor.GOLD), List.of(Ability.NO_KNOCKBACK));
+        FLASH = new Character(2, MiniMsg.plainString("Flash", NamedTextColor.RED), List.of(Ability.SPEED_BOOST));
+    }
 
     public List<Character> getCharacters() {
         return List.of(MARIO, DONKEY_KONG, FLASH);

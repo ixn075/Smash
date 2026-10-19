@@ -12,7 +12,6 @@ import de.ixn075.smash.listeners.custom.GameStateChangeListener;
 import de.ixn075.smash.map.loader.MapLoader;
 import de.ixn075.smash.map.setup.MapSetup;
 import de.ixn075.smash.scoreboard.ScoreboardPlayerManager;
-import de.ixn075.smash.strings.Strings;
 import de.ixn075.smash.timer.GameTimer;
 import de.ixn075.smash.voting.VoteManager;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -31,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SmashPlugin extends JavaPlugin {
 
@@ -71,11 +71,11 @@ public class SmashPlugin extends JavaPlugin {
     public void onEnable() {
         configFile = new File(getDataFolder(), "config.yml");
         if (this.getDataFolder().mkdirs()) {
-            this.getLogger().info("Created config folder.");
+            this.getLogger().info("Initializing configuration...");
         }
         try {
             if (this.configFile.createNewFile()) {
-                this.getLogger().info("Created config file.");
+                this.getLogger().info("Configuration file initialized!");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -89,16 +89,7 @@ public class SmashPlugin extends JavaPlugin {
             throw new RuntimeException(e);
         }
 
-        Strings.init();
-
         setups = new HashMap<>();
-        gameStateManager = new GameStateManager();
-        characterPlayerManager = new CharacterPlayerManager();
-        scoreboardPlayerManager = new ScoreboardPlayerManager();
-        voteManager = new VoteManager();
-        characterManager = new CharacterManager();
-        gameTimer = new GameTimer();
-
         listeners = new ArrayList<>();
 
         listeners.add(new AsyncPlayerPreLoginListener());
@@ -124,8 +115,7 @@ public class SmashPlugin extends JavaPlugin {
         }
 
         List<Command> commands = new ArrayList<>();
-        commands.add(
-                new MapSetupCommand("mapsetup", "Setup command to configure maps.", "/mapsetup <abort, finish, set, start>"));
+        commands.add(new MapSetupCommand("mapsetup", "Setup command to configure maps.", "/mapsetup <abort, finish, set, start>"));
         commands.add(new StartCommand("start", "Start command to skip wait time.", "/start"));
         commands.add(new VoteCommand("vote", "Vote command to change map vote.", "/vote <map>"));
 
@@ -134,7 +124,6 @@ public class SmashPlugin extends JavaPlugin {
         }
 
         for (World world : getServer().getWorlds()) {
-            getLogger().config("Configuring world '" + world.getName() + "'.");
             world.setDifficulty(Difficulty.PEACEFUL);
             world.setThundering(false);
             world.setStorm(false);
@@ -160,6 +149,19 @@ public class SmashPlugin extends JavaPlugin {
             world.setGameRule(GameRules.MAX_ENTITY_CRAMMING, 8);
         }
 
+        gameStateManager = new GameStateManager();
+
+        characterPlayerManager = new CharacterPlayerManager();
+
+        scoreboardPlayerManager = new ScoreboardPlayerManager();
+
+        voteManager = new VoteManager();
+
+        characterManager = new CharacterManager();
+        characterManager.init();
+
+        gameTimer = new GameTimer();
+
         MapLoader.loadMaps();
     }
 
@@ -171,19 +173,23 @@ public class SmashPlugin extends JavaPlugin {
 
         listOfStrings.put("strings.prefix", "<gold>Smash</gold><dark_gray> => </dark_gray>");
 
-        listOfStrings.put("strings.join", "<green>$name joined the server.</green>");
-        listOfStrings.put("strings.quit", "<red>$name left the server.</red>");
+        listOfStrings.put("strings.join", "<green>$name joined the game.</green>");
+        listOfStrings.put("strings.quit", "<red>$name left the game.</red>");
         listOfStrings.put("strings.players-missing", "<gold>There are still players missing to start the game.</gold>");
         listOfStrings.put("strings.scoreboard.title", "<gold>Smash</gold> <dark_gray>|</dark_gray> $timer");
 
         listOfStrings.put("maps", List.of());
 
+        AtomicInteger added = new AtomicInteger(0);
         listOfStrings.forEach((key, value) -> {
             if (!this.getFileConfiguration().contains(key)) {
                 this.getFileConfiguration().set(key, value);
-                this.getLogger().info("[+] " + key + ": " + value);
+                added.addAndGet(1);
             }
         });
+
+        if (added.get() != 0)
+            getLogger().info("Saved " + added.get() + " default values into configuration.");
 
         this.fileConfiguration.save(configFile);
     }
@@ -193,14 +199,23 @@ public class SmashPlugin extends JavaPlugin {
 
         // Plugin disable
 
-        getLogger().info("Force stopping game timer.");
-        gameTimer.forceStop();
+        if (this.gameTimer != null) {
+            this.getLogger().info("Force stopping game timer.");
+            this.gameTimer.forceStop();
+        }
 
-        getLogger().info("Force stopping all running game setups.");
-        setups.clear();
+        if (this.setups != null) {
+            int count = setups.size();
+            if (count > 0) {
+                this.getLogger().info("Force stopping all " + count + " running game setups.");
+                this.setups.clear();
+            }
+        }
 
-        getLogger().info("Cleanup all remaining listeners.");
-        listeners.clear();
+        if (this.listeners != null) {
+            this.getLogger().info("Cleanup all remaining listeners.");
+            this.listeners.clear();
+        }
     }
 
     public GameStateManager getGameStateManager() {

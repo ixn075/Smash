@@ -20,12 +20,12 @@ public class MapSetup {
         SmashPlugin.getPlugin().getSetups().put(player, this);
     }
 
-    public void delete() {
+    public void remove() {
         SmashPlugin.getPlugin().getSetups().remove(player);
     }
 
     public Map finish() {
-        delete();
+        remove();
         return new Map(name, spawnLocations);
     }
 

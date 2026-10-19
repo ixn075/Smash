@@ -5,18 +5,12 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 public class MiniMsg {
 
-    private static MiniMessage MINI_MESSAGE;
-    private static FileConfiguration CONFIG;
-
-    public static void init() {
-        MINI_MESSAGE = MiniMessage.miniMessage();
-        CONFIG = SmashPlugin.getPlugin().getFileConfiguration();
-    }
+    private static final MiniMessage MINI_MESSAGE = MiniMessage.builder().build();
+    private static final FileConfiguration CONFIG = SmashPlugin.getPlugin().getFileConfiguration();
 
     public static @NonNull Component string(String path) {
         String string = CONFIG.getString(path);
@@ -27,11 +21,11 @@ public class MiniMsg {
         return CONFIG.getInt(path);
     }
 
-    public static <R extends String> @NotNull Component plainString(R message) {
+    public static <R extends String> @NonNull Component plainString(R message) {
         return MINI_MESSAGE.deserialize(message);
     }
 
-    public static <R extends String> @NotNull Component plainString(R message, NamedTextColor color) {
-        return plainString(message).color(NamedTextColor.nearestTo(color));
+    public static <R extends String> @NonNull Component plainString(R message, NamedTextColor color) {
+        return MINI_MESSAGE.deserialize(message).color(color);
     }
 }
