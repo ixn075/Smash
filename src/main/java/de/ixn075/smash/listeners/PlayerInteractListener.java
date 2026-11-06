@@ -1,17 +1,13 @@
 package de.ixn075.smash.listeners;
 
 import de.ixn075.smash.SmashPlugin;
-import de.ixn075.smash.builder.GameInventory;
-import de.ixn075.smash.builder.Item;
-import de.ixn075.smash.builder.Skull;
+import de.ixn075.smash.api.item.Skull;
+import de.ixn075.smash.api.inventory.SmashInventory;
 import de.ixn075.smash.character.Character;
 import de.ixn075.smash.character.CharacterManager;
 import de.ixn075.smash.config.MiniMsg;
 import de.ixn075.smash.strings.Strings;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,8 +19,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static net.kyori.adventure.text.format.NamedTextColor.GREEN;
 
 public class PlayerInteractListener implements Listener {
 
@@ -44,11 +38,11 @@ public class PlayerInteractListener implements Listener {
                 for (Character character : cm.getCharacters()) {
                     items.add(new Skull(1, character.getName()).build());
                 }
-                new GameInventory(Strings.CHARACTER_SELECTION).edit(editor -> {
+                new SmashInventory(Strings.CHARACTER_SELECTION).edit(editor -> {
                     for (int i = 0; i < items.size(); i++) {
                         editor.set(i, items.get(i));
                     }
-                }).accept(player::openInventory);
+                }).then(player::openInventory);
                 e.setCancelled(true);
             }
             case MAP -> {
@@ -64,7 +58,7 @@ public class PlayerInteractListener implements Listener {
                     return;
                 }
 
-                for (Object map  : readMaps) {
+                for (Object map : readMaps) {
                     player.sendMessage(Strings.PREFIX.append(MiniMsg.plainString("Map: " + map.toString(), NamedTextColor.YELLOW)));
                 }
 

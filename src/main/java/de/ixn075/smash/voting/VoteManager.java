@@ -1,28 +1,30 @@
 package de.ixn075.smash.voting;
 
-import de.ixn075.smash.map.Map;
-import org.bukkit.entity.Player;
+import de.ixn075.smash.api.map.Map;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class VoteManager {
 
-    private final HashMap<Player, Map> votes = new HashMap<>();
+    private final HashMap<UUID, Vote> votes = new HashMap<>();
 
-    public boolean vote(Player player, Map map) {
-        if (!votes.containsKey(player)) {
-            votes.put(player, map);
-            return true;
+    public Vote vote(@NonNull UUID uuid, Map map) {
+        Vote vote = new Vote(map);
+        if (!votes.containsKey(uuid)) {
+            votes.put(uuid, vote);
         } else {
-            return false;
+            votes.replace(uuid, vote);
         }
+        return votes.get(uuid);
     }
 
-    public Map get(Player player) {
-        return votes.get(player);
+    public Vote getVote(UUID uuid) {
+        return votes.get(uuid);
     }
 
-    public void rem(Player player) {
-        votes.remove(player);
+    public void unvote(UUID uuid) {
+        votes.remove(uuid);
     }
 }

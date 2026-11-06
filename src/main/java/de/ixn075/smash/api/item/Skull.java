@@ -1,4 +1,4 @@
-package de.ixn075.smash.builder;
+package de.ixn075.smash.api.item;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;

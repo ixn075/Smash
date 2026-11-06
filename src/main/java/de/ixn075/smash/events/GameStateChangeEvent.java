@@ -1,6 +1,6 @@
 package de.ixn075.smash.events;
 
-import de.ixn075.smash.gamestate.GameState;
+import de.ixn075.smash.api.gamestate.GameState;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -13,12 +13,10 @@ public class GameStateChangeEvent extends Event implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
     private final GameState gameState;
-    private final boolean skip;
     protected boolean cancelled;
 
-    public GameStateChangeEvent(GameState state, boolean skip) {
+    public GameStateChangeEvent(GameState state) {
         this.gameState = state;
-        this.skip = skip;
     }
 
     public static HandlerList getHandlerList() {
@@ -27,10 +25,6 @@ public class GameStateChangeEvent extends Event implements Cancellable {
 
     public GameState getGameState() {
         return gameState;
-    }
-
-    public boolean isSkip() {
-        return skip;
     }
 
     @Override

@@ -1,7 +1,7 @@
-package de.ixn075.smash.map.loader;
+package de.ixn075.smash.map;
 
 import de.ixn075.smash.SmashPlugin;
-import de.ixn075.smash.map.Map;
+import de.ixn075.smash.api.map.Map;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -32,8 +32,8 @@ public abstract class MapLoader {
     public static void loadMaps() {
         ConfigurationSection section = config.getConfigurationSection("maps");
         if (section == null) return;
-        section.getKeys(false).forEach((key) -> {
-            Map map = loadMap(section.getString(key));
+        section.getKeys(false).forEach((mapName) -> {
+            Map map = loadMap(section.getString(mapName));
             cachedMaps.add(map);
         });
     }
@@ -44,17 +44,20 @@ public abstract class MapLoader {
         if (configMapsSection == null) return null;
 
         Location[] locations = new Location[configMapsSection.getKeys(false).size()];
+
         for (String key : configMapsSection.getKeys(false)) { // All map names from maps section (e.g. maps.Desert; maps.Temple)
-            for (String value : configMapsSection.getStringList(key + ".spawnLocations")) { //
+            for (String value : configMapsSection.getStringList(key + ".locations")) { //
                 Location location = config.getLocation(value);
                 locations = new Location[]{location};
             }
         }
 
         if (locations.length == 0) {
-            throw new IllegalArgumentException("Locations for map '" + mapName + "' are empty.");
+            System.err.println("Error while loading a map: " + mapName);
+            throw new RuntimeException("Locations for map '" + mapName + "' are empty");
         }
-        return new Map(mapName, locations);
+
+        return new Map(mapName, 0);
     }
 
     /**
@@ -67,9 +70,15 @@ public abstract class MapLoader {
         return cachedMaps;
     }
 
-    public static void clearMaps() {
+    public static void clearCachedMaps() {
         for (Map map : cachedMaps) {
             cachedMaps.remove(map);
         }
+    }
+
+    public boolean checkValidation(String mapName) {
+        Object section = config.get("maps." + mapName);
+
+        return section != null;
     }
 }

@@ -2,7 +2,6 @@ package de.ixn075.smash.listeners;
 
 import de.ixn075.smash.SmashPlugin;
 import de.ixn075.smash.config.MiniMsg;
-import de.ixn075.smash.gamestate.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -19,17 +18,24 @@ public class AsyncPlayerPreLoginListener implements Listener {
         int online = Bukkit.getOnlinePlayers().size();
         int max = Bukkit.getMaxPlayers();
         if (online >= max) {
-            if (SmashPlugin.getPlugin().getGameStateManager().isGameState(GameState.LOBBY)) {
-                e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, MiniMsg.plainString("The server is full!", RED));
-            } else if (SmashPlugin.getPlugin().getGameStateManager().isGameState(GameState.INGAME)) {
-                e.allow();
-                Player player = Bukkit.getPlayer(e.getUniqueId());
-                if (player != null) {
-                    Bukkit.getOnlinePlayers().remove(player); // Remove player from online players list
-                    player.setGameMode(GameMode.SPECTATOR);
+            switch (SmashPlugin.getPlugin().getGameStateManager().getCurrentState()) {
+                case LOBBY ->
+                        e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_FULL, MiniMsg.plainString("The server is full!", RED));
+                case INGAME -> {
+
+                    // Allowing connection to server to spectate the other online players while they're playing.
+                    // This also allows the connection to the server, even if the server has reacted it's max online players;
+                    e.allow();
+
+                    // Manipulating the online players count to trick the online players that nobody is watching the game right now.
+                    Player player = Bukkit.getPlayer(e.getUniqueId());
+                    if (player != null) {
+                        Bukkit.getOnlinePlayers().remove(player); // Remove player from online players list
+                        player.setGameMode(GameMode.SPECTATOR);
+                    }
                 }
-            } else {
-                e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, MiniMsg.plainString("The game already ended.", RED));
+                default ->
+                        e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, MiniMsg.plainString("The game already ended.", RED));
             }
         }
     }

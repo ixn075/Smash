@@ -1,4 +1,4 @@
-package de.ixn075.smash.builder;
+package de.ixn075.smash.api.item;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -21,7 +21,7 @@ public class Item {
     private final ItemMeta itemMeta;
 
     private Item() {
-        throw new UnsupportedOperationException("This class can not be instantiated.");
+        throw new UnsupportedOperationException();
     }
 
     /**

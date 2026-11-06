@@ -2,14 +2,13 @@ package de.ixn075.smash.strings;
 
 import de.ixn075.smash.config.MiniMsg;
 import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.NotNull;
 
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 public class Strings {
 
-    public static Component CHARACTER_SELECTION = MiniMsg.string("names.character-selection");
-    public static Component MAPS_SELECTION = MiniMsg.string("names.maps-selection");
+    public static Component CHARACTER_SELECTION = MiniMsg.string("strings.names.character-selection");
+    public static Component MAPS_SELECTION = MiniMsg.string("strings.names.maps-selection");
     public static Component PREFIX = MiniMsg.string("strings.prefix");
     public static Component SCOREBOARD_TITLE = MiniMsg.string("strings.scoreboard.title");
 

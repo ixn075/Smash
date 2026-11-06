@@ -1,4 +1,4 @@
-package de.ixn075.smash.util;
+package de.ixn075.smash.api.util;
 
 import org.jetbrains.annotations.NotNull;
 

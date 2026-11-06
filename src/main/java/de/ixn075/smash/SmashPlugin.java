@@ -1,17 +1,16 @@
 package de.ixn075.smash;
 
+import de.ixn075.smash.gamestate.GameStateManager;
+import de.ixn075.smash.map.MapLoader;
+import de.ixn075.smash.api.map.MapSetup;
 import de.ixn075.smash.character.CharacterManager;
 import de.ixn075.smash.character.CharacterPlayerManager;
 import de.ixn075.smash.commands.MapSetupCommand;
 import de.ixn075.smash.commands.StartCommand;
 import de.ixn075.smash.commands.VoteCommand;
-import de.ixn075.smash.gamestate.GameStateManager;
 import de.ixn075.smash.listeners.*;
 import de.ixn075.smash.listeners.custom.CharacterChangeListener;
 import de.ixn075.smash.listeners.custom.GameStateChangeListener;
-import de.ixn075.smash.map.loader.MapLoader;
-import de.ixn075.smash.map.setup.MapSetup;
-import de.ixn075.smash.scoreboard.ScoreboardPlayerManager;
 import de.ixn075.smash.timer.GameTimer;
 import de.ixn075.smash.voting.VoteManager;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -20,16 +19,12 @@ import org.bukkit.GameRules;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SmashPlugin extends JavaPlugin {
@@ -37,8 +32,7 @@ public class SmashPlugin extends JavaPlugin {
     private static SmashPlugin plugin;
     private GameStateManager gameStateManager;
     private CharacterPlayerManager characterPlayerManager;
-    private ScoreboardPlayerManager scoreboardPlayerManager;
-    private HashMap<Player, MapSetup> setups;
+    private HashMap<UUID, MapSetup> setups;
     private CharacterManager characterManager;
     private VoteManager voteManager;
     private GameTimer gameTimer;
@@ -153,8 +147,6 @@ public class SmashPlugin extends JavaPlugin {
 
         characterPlayerManager = new CharacterPlayerManager();
 
-        scoreboardPlayerManager = new ScoreboardPlayerManager();
-
         voteManager = new VoteManager();
 
         characterManager = new CharacterManager();
@@ -168,8 +160,6 @@ public class SmashPlugin extends JavaPlugin {
     public void saveDefaultValues() throws IOException {
         Map<String, Object> listOfStrings = new HashMap<>();
         listOfStrings.put("min-players-count", 2);
-        listOfStrings.put("names.character-selection", "<gold>Characters</gold>");
-        listOfStrings.put("names.maps-selection", "<gold>Maps</gold>");
 
         listOfStrings.put("strings.prefix", "<gold>Smash</gold><dark_gray> => </dark_gray>");
 
@@ -177,6 +167,9 @@ public class SmashPlugin extends JavaPlugin {
         listOfStrings.put("strings.quit", "<red>$name left the game.</red>");
         listOfStrings.put("strings.players-missing", "<gold>There are still players missing to start the game.</gold>");
         listOfStrings.put("strings.scoreboard.title", "<gold>Smash</gold> <dark_gray>|</dark_gray> $timer");
+
+        listOfStrings.put("strings.names.character-selection", "<gold>Characters</gold>");
+        listOfStrings.put("strings.names.maps-selection", "<gold>Maps</gold>");
 
         listOfStrings.put("maps", List.of());
 
@@ -196,18 +189,11 @@ public class SmashPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
         // Plugin disable
-
-        if (this.gameTimer != null) {
-            this.getLogger().info("Force stopping game timer.");
-            this.gameTimer.forceStop();
-        }
-
         if (this.setups != null) {
             int count = setups.size();
             if (count > 0) {
-                this.getLogger().info("Force stopping all " + count + " running game setups.");
+                this.getLogger().info("Stopping all " + count + " running game setups.");
                 this.setups.clear();
             }
         }
@@ -226,11 +212,7 @@ public class SmashPlugin extends JavaPlugin {
         return characterPlayerManager;
     }
 
-    public ScoreboardPlayerManager getScoreboardManager() {
-        return scoreboardPlayerManager;
-    }
-
-    public HashMap<Player, MapSetup> getSetups() {
+    public HashMap<UUID, MapSetup> getSetups() {
         return setups;
     }
 

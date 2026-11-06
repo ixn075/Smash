@@ -1,60 +1,56 @@
 package de.ixn075.smash.scoreboard;
 
-import de.ixn075.smash.SmashPlugin;
-import de.ixn075.smash.gamestate.GameState;
 import de.ixn075.smash.strings.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
-import org.jetbrains.annotations.NotNull;
 
 public class SmashScoreboard {
 
     private final ScoreboardManager bsm = Bukkit.getScoreboardManager();
     private final Scoreboard scoreboard = bsm.getMainScoreboard();
-    private final ScoreboardPlayerManager spm = SmashPlugin.getPlugin().getScoreboardManager();
     private final Player player;
-    private final GameState gameState;
 
-    private Objective o = scoreboard.getObjective("SmashBoard");
+    private Objective objective;
+    private Team team;
 
-    public SmashScoreboard(Player player, GameState gameState) {
+    public SmashScoreboard(Player player) {
         this.player = player;
-        this.gameState = gameState;
-    }
-
-    public void create() {
-        if (o == null) {
-            o = this.scoreboard.registerNewObjective("SmashBoard", Criteria.TRIGGER,
+        this.objective = scoreboard.getObjective("SmashBoard");
+        if (this.objective == null) {
+            objective = this.scoreboard.registerNewObjective("SmashBoard", Criteria.DUMMY,
                     Strings.SCOREBOARD_TITLE, RenderType.INTEGER);
-            ;
-        } else {
-            o.setAutoUpdateDisplay(true);
         }
-    }
-
-    public void show() {
-        try {
-            player.setScoreboard(this.scoreboard);
-            spm.add(player);
-        } catch (IllegalArgumentException | IllegalStateException | NullPointerException e) {
-            e.printStackTrace(System.err);
+        this.team = scoreboard.getTeam("SmashBoard-Team");
+        if (this.team == null) {
+            this.scoreboard.registerNewTeam("SmashBoard-Team");
         }
-    }
-
-    public void clear(@NotNull Player player) {
-        spm.remove(player);
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        objective.setAutoUpdateDisplay(true);
+        player.setScoreboard(this.scoreboard);
     }
 
     public Player getPlayer() {
         return player;
     }
 
-    public GameState getGameState() {
-        return gameState;
-    }
-
     public Scoreboard getScoreboard() {
         return scoreboard;
+    }
+
+    public Objective getObjective() {
+        return objective;
+    }
+
+    public void setObjective(Objective objective) {
+        this.objective = objective;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 }

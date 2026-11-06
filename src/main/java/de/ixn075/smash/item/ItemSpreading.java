@@ -1,7 +1,7 @@
 package de.ixn075.smash.item;
 
 import de.ixn075.smash.SmashPlugin;
-import de.ixn075.smash.gamestate.GameState;
+import de.ixn075.smash.api.gamestate.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -20,23 +20,24 @@ public class ItemSpreading {
         this.random = new SecureRandom();
 
         task = Bukkit.getScheduler().runTaskTimer(SmashPlugin.getPlugin(), () -> {
-            if (SmashPlugin.getPlugin().getGameStateManager().isGameState(GameState.INGAME)) {
-                // Calculate random position within the radius
-                double angle = random.nextDouble() * 2 * Math.PI; // random angle
-                double distance = random.nextDouble() * radius; // random distance within the radius
-                double offsetX = distance * StrictMath.cos(angle);
-                double offsetZ = distance * StrictMath.sin(angle);
+            if (SmashPlugin.getPlugin().getGameStateManager().getCurrentState() != GameState.INGAME) {
+                return;
+            }
+            // Calculate random position within the radius
+            double angle = random.nextDouble() * 2 * Math.PI; // random angle
+            double distance = random.nextDouble() * radius; // random distance within the radius
+            double offsetX = distance * StrictMath.cos(angle);
+            double offsetZ = distance * StrictMath.sin(angle);
 
-                Location spreadLoc = location.clone().add(offsetX, location.clone().toBlockLocation().toHighestLocation().getY(), offsetZ);
+            Location spreadLoc = location.clone().add(offsetX, location.clone().toBlockLocation().toHighestLocation().getY(), offsetZ);
 
-                // Choose a random item
-                ItemStack item = items.get(random.nextInt(items.size()));
+            // Choose a random item
+            ItemStack item = items.get(random.nextInt(items.size()));
 
-                // Drop the item at the given location
-                World world = location.getWorld();
-                if (world != null) {
-                    world.dropItem(spreadLoc, item);
-                }
+            // Drop the item at the given location
+            World world = location.getWorld();
+            if (world != null) {
+                world.dropItem(spreadLoc, item);
             }
         }, 0, 20 * 30); // 30 seconds interval
     }

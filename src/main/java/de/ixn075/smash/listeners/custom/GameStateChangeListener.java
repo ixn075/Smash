@@ -1,7 +1,7 @@
 package de.ixn075.smash.listeners.custom;
 
 import de.ixn075.smash.SmashPlugin;
-import de.ixn075.smash.builder.Item;
+import de.ixn075.smash.api.item.Item;
 import de.ixn075.smash.config.MiniMsg;
 import de.ixn075.smash.countdown.EndCountdown;
 import de.ixn075.smash.events.GameStateChangeEvent;
@@ -26,33 +26,35 @@ public class GameStateChangeListener implements Listener {
     void on(@NotNull GameStateChangeEvent e) {
         switch (e.getGameState()) {
             case INGAME -> {
+                SmashPlugin.getPlugin().getGameTimer().start();
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     player.setAllowFlight(false);
                     player.setFlying(false);
                     player.getInventory().clear();
                     player.sendTitlePart(TitlePart.TITLE, MiniMsg.plainString("Hooray!", GREEN));
                     player.sendTitlePart(TitlePart.SUBTITLE, MiniMsg.plainString("The game begins!", GRAY));
-                    player.sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ZERO, Duration.ofMillis(2500), Duration.ZERO));
+                    player.sendTitlePart(TitlePart.TIMES, Title.Times.times(
+                            Duration.ofMillis(500), Duration.ofMillis(2000), Duration.ofMillis(500)));
 
-                    ItemStack chestItem = new Item(Material.CHEST, 3, MiniMsg.plainString("CHEST", RED)).build();
+                    ItemStack stoneItem = new Item(Material.STONE, 3, MiniMsg.plainString("CHEST", RED)).build();
                     ItemStack bedrockItem = new Item(Material.BEDROCK, 3, MiniMsg.plainString("BEDROCK", RED)).build();
-                    assert chestItem != null;
+                    assert stoneItem != null;
                     assert bedrockItem != null;
-                    // new ItemSpreading(player.getLocation(), 5, List.of(chestItem, bedrockItem));
+                    // new ItemSpreading(player.getLocation(), 5, List.of(stoneItem, bedrockItem));
 
                     // TODO: Teleport players to random locations of voted map
                 }
-                SmashPlugin.getPlugin().getGameTimer().start();
             }
             case END -> {
                 SmashPlugin.getPlugin().getGameTimer().stop();
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    player.setGameMode(GameMode.SPECTATOR);
+                    player.setGameMode(GameMode.SURVIVAL);
                     player.setAllowFlight(false);
                     player.setFlying(false);
                     player.getInventory().clear();
                     player.sendTitlePart(TitlePart.TITLE, MiniMsg.plainString("End of the game!", RED));
-                    player.sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ZERO, Duration.ofMillis(2000), Duration.ZERO));
+                    player.sendTitlePart(TitlePart.TIMES, Title.Times.times(
+                            Duration.ofMillis(500), Duration.ofMillis(2000), Duration.ofMillis(500)));
                 }
                 EndCountdown.start();
             }

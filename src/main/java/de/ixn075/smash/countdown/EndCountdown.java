@@ -1,10 +1,10 @@
 package de.ixn075.smash.countdown;
 
 import de.ixn075.smash.SmashPlugin;
+import de.ixn075.smash.api.gamestate.GameState;
+import de.ixn075.smash.api.util.PlayerUtil;
 import de.ixn075.smash.config.MiniMsg;
-import de.ixn075.smash.gamestate.GameState;
 import de.ixn075.smash.strings.Strings;
-import de.ixn075.smash.util.PlayerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -15,7 +15,7 @@ public class EndCountdown {
     private static int seconds;
 
     public static void start() {
-        if (!SmashPlugin.getPlugin().getGameStateManager().isGameState(GameState.END)) {
+        if (SmashPlugin.getPlugin().getGameStateManager().getCurrentState() != GameState.END) {
             throw new IllegalStateException("Ending-Countdown can only be started in END-State.");
         }
         seconds = 15;

@@ -7,14 +7,17 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jspecify.annotations.NonNull;
 
-public class MiniMsg {
+import java.util.List;
+
+public abstract class MiniMsg {
 
     private static final MiniMessage MINI_MESSAGE = MiniMessage.builder().build();
     private static final FileConfiguration CONFIG = SmashPlugin.getPlugin().getFileConfiguration();
 
     public static @NonNull Component string(String path) {
         String string = CONFIG.getString(path);
-        return plainString(string);
+        assert string != null;
+        return Component.text(string);
     }
 
     public static int integer(String path) {
@@ -27,5 +30,9 @@ public class MiniMsg {
 
     public static <R extends String> @NonNull Component plainString(R message, NamedTextColor color) {
         return MINI_MESSAGE.deserialize(message).color(color);
+    }
+
+    public static List<?> list(String path) {
+        return CONFIG.getList(path);
     }
 }

@@ -1,10 +1,11 @@
 package de.ixn075.smash.commands;
 
 import de.ixn075.smash.SmashPlugin;
+import de.ixn075.smash.api.map.Map;
+import de.ixn075.smash.map.MapLoader;
 import de.ixn075.smash.config.MiniMsg;
-import de.ixn075.smash.map.Map;
-import de.ixn075.smash.map.loader.MapLoader;
 import de.ixn075.smash.strings.Strings;
+import de.ixn075.smash.voting.Vote;
 import de.ixn075.smash.voting.VoteManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -44,25 +45,21 @@ public class VoteCommand extends Command {
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, String @NotNull [] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Strings.PREFIX.append(Strings.ONLY_PLAYERS));
+            sender.sendMessage(Strings.ONLY_PLAYERS);
             return false;
         }
         if (args.length == 1) {
             Map map = MapLoader.getMapOfName(args[0]);
             if (map == null) {
-                player.sendMessage(Strings.PREFIX.append(MiniMsg.plainString("Map '" + args[0] + "' doesn't exist.", RED)));
+                player.sendActionBar(Strings.PREFIX.append(MiniMsg.plainString("Map '" + args[0] + "' doesn't exist.", RED)));
                 return false;
             }
-            boolean voted = vm.vote(player, map);
 
-
-            if (!voted) {
-                player.sendMessage(Strings.PREFIX.append(MiniMsg.plainString("You cannot vote for '" + args[0] + "' again.", RED)));
-            } else {
-                player.sendMessage(Strings.PREFIX.append(MiniMsg.plainString("You voted for '" + args[0] + "'.", GREEN)));
-            }
+            Vote vote = vm.vote(player.getUniqueId(), map);
+            player.sendActionBar(Strings.PREFIX.append(MiniMsg.plainString("You voted for '" + vote.getMap().getName() + "'.", GREEN)));
         } else {
             sender.sendMessage(Strings.PREFIX.append(MiniMsg.plainString("Use following arguments:", GRAY)));
+            sender.sendMessage(Strings.PREFIX.append(MiniMsg.plainString(" ")));
             sender.sendMessage(Strings.PREFIX.append(MiniMsg.plainString("/vote <map>", GREEN)));
         }
         return false;

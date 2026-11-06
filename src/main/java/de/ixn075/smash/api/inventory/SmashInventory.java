@@ -1,4 +1,4 @@
-package de.ixn075.smash.builder;
+package de.ixn075.smash.api.inventory;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -9,32 +9,32 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-public class GameInventory {
+public class SmashInventory {
 
     private Inventory inventory;
     private Component name;
-    private InventoryEditor editor;
+    private Editor editor;
     private int slots;
 
-    public GameInventory(Component name) throws IllegalArgumentException {
-        new GameInventory(name, 1);
+    public SmashInventory(Component name) throws IllegalArgumentException {
+        new SmashInventory(name, 1);
     }
 
-    public GameInventory(Component name, int factor) throws IllegalArgumentException {
+    public SmashInventory(Component name, int factor) throws IllegalArgumentException {
         // Factor 6 is the highest valid number available to create an inventory in Minecraft.
         // This means the inventory will have 9 * 6 (= 54) slots
         // If factor is greater than 6, use 6 as factor.
         this.slots = factor > 6 ? 54 : 9 * factor;
         this.name = name;
         this.inventory = Bukkit.createInventory(null, slots, name);
-        this.editor = new InventoryEditor(this);
+        this.editor = new Editor(this);
     }
 
-    public void accept(@NotNull Consumer<Inventory> consumer) {
+    public void then(@NotNull Consumer<Inventory> consumer) {
         consumer.accept(inventory);
     }
 
-    public GameInventory edit(@NotNull Consumer<InventoryEditor> consumer) {
+    public SmashInventory edit(@NotNull Consumer<Editor> consumer) {
         consumer.accept(editor);
         return this;
     }
@@ -50,32 +50,32 @@ public class GameInventory {
     /**
      * A record class for an inventory edit instance.
      *
-     * @param creator The instance of the inventory creator => {@link GameInventory}
+     * @param creator The instance of the inventory creator
      */
-    public record InventoryEditor(GameInventory creator) {
+    public record Editor(SmashInventory creator) {
 
         public void add(ItemStack itemStack) {
-            creator.accept(inventory -> inventory.addItem(itemStack));
+            creator.then(inventory -> inventory.addItem(itemStack));
         }
 
         public void add(ItemStack... itemStack) {
-            creator.accept(inventory -> inventory.addItem(itemStack));
+            creator.then(inventory -> inventory.addItem(itemStack));
         }
 
         public void set(int index, ItemStack itemStack) {
-            creator.accept(inventory -> inventory.setItem(index, itemStack));
+            creator.then(inventory -> inventory.setItem(index, itemStack));
         }
 
         public void clear() {
-            creator.accept(Inventory::clear);
+            creator.then(Inventory::clear);
         }
 
         public void remove(Material material) {
-            creator.accept(inventory -> inventory.remove(material));
+            creator.then(inventory -> inventory.remove(material));
         }
 
         public void remove(ItemStack itemStack) {
-            creator.accept(inventory -> inventory.remove(itemStack));
+            creator.then(inventory -> inventory.remove(itemStack));
         }
     }
 }

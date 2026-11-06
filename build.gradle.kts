@@ -1,7 +1,6 @@
 plugins {
     java
     `maven-publish`
-    id("xyz.jpenilla.run-paper") version "3.1.0"
 }
 
 repositories {
@@ -21,12 +20,6 @@ java {
 group = "de.ixn075"
 version = "1.1"
 description = "The plugin for Super Smash Bros but in Minecraft."
-
-tasks {
-    runServer {
-        minecraftVersion("1.21.11")
-    }
-}
 
 publishing {
     publications.create<MavenPublication>("maven") {
